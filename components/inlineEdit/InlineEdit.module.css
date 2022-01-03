@@ -1,0 +1,16 @@
+.containerActive {
+  display: block;
+  height: 40px;
+  width: 100%;
+  border: 2px solid black;
+  font-size: 18px;
+  padding: 0 8px;
+}
+.containerInactive {
+  display: block;
+  height: 40px;
+  width: 100%;
+  border: 2px solid transparent;
+  font-size: 18px;
+  padding: 0 8px;
+}

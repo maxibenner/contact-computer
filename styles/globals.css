@@ -4,6 +4,26 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  box-sizing: border-box;
+  /* background: linear-gradient(to bottom right, #F6D5C6, #E281BB, #a2cfda); */
+  background: hsla(238, 100%, 94%, 0.8);
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
+body {
+  min-height: 100vh;
+  overflow: scroll;
+  width: 100%;
+
+  background-image: linear-gradient(
+      hsla(237, 92%, 62%, 0.8) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to right, hsla(237, 92%, 62%, 0.8) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 a {
