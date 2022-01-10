@@ -1,24 +1,31 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import { Border } from "../components/border/Border";
 import React, { useState, useContext } from "react";
 import { FieldsContext } from "../context/fieldsContext";
-import { Logo } from "../components/logo/Logo";
 import { ContactCard } from "../components/contactCard/ContactCard";
 import { Search } from "../components/search/Search";
 import { ContactSearchResults } from "../components/contactSearchResults/ContactSearchResults";
 import { Contact } from "../sdk/contacts";
+import { Button } from "../components/button/Button";
+import { getContactSearchResult } from "../sdk/db";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   const { fields, addField } = useContext(FieldsContext);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [selected, setSelected] = useState<Contact | null>(null);
 
+  const handleSearch = () => {
+    const data = getContactSearchResult();
+    setContacts(data);
+  };
+
   const handleSelect = (contact: Contact) => {
     setContacts([]);
     setSelected(contact);
   };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -26,11 +33,8 @@ const Home: NextPage = () => {
         <meta name="description" content="Ask the computer anything" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Border />
+
       <main className={styles.main}>
-        <div style={{ position: "absolute", top: 8, left: 8 }}>
-          <Logo />
-        </div>
         {selected ? (
           <ContactCard
             onCancel={() => setSelected(null)}
@@ -40,12 +44,28 @@ const Home: NextPage = () => {
           />
         ) : (
           <div style={{ width: "90%", maxWidth: "400px" }}>
-            <Search onResult={setContacts} />
+            <h1
+              style={{ color: "#454ef7", marginTop: "100px", fontSize: "4rem", marginBottom: "25px" }}
+            >
+              The global address book
+            </h1>
+            <Search onSearch={handleSearch} />
             <ContactSearchResults
               onSelect={handleSelect}
               contacts={contacts}
-              style={{ marginTop: "10px" }}
+              style={{ margin: "10px 0" }}
             />
+            {/* <Link href="/auth">
+              <Button
+                tabindex={0}
+                style={{
+                  height: "50px",
+                  width: "100%",
+                  margin: "0 auto",
+                }}
+                text="Add your contact info"
+              />
+            </Link> */}
           </div>
         )}
       </main>

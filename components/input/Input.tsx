@@ -1,7 +1,7 @@
 import React from "react";
 
-export const Input = ({ styles }: { styles?: React.CSSProperties }) => {
-  return <input style={{ ...internalStyles.container, ...styles }} />;
+export const Input = ({ style }: { style?: React.CSSProperties }) => {
+  return <input style={{ ...internalStyles.container, ...style }} />;
 };
 
 const internalStyles = {

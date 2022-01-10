@@ -1,40 +1,44 @@
 import { Button } from "../button/Button";
 import styles from "./search.module.css";
 import { MdSearch } from "react-icons/md";
-import { getContactSearchResult } from "../../sdk/db";
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { Contact } from "../../sdk/contacts";
+import React, { useState } from "react";
 
-export const Search = ({ onResult }: { onResult: Function }) => {
-  //   const [contacts, setContacts] = useState<Contact[]>();
-  //   useEffect(() => {
-
-  //     setContacts(data);
-  //   }, []);
-
-  const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
-    if (e.currentTarget.value === "") {
-      onResult([]);
-    } else {
-      const data = getContactSearchResult();
-      onResult(data);
-    }
+export const Search = ({
+  onChange,
+  onSearch,
+  style,
+}: {
+  onChange?: Function;
+  onSearch?: Function;
+  style?: React.CSSProperties;
+}) => {
+  const [value, setValue] = useState<string>();
+  const handleChange = (t: string) => {
+    setValue(t);
+    onChange && onChange(t);
   };
-
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch && onSearch(value);
+  };
+  const handleSearch = () => {
+    onSearch && onSearch(value);
+  };
   return (
-    <div className={styles.container}>
+    <form className={styles.container} style={style} onSubmit={handleSubmit}>
       <input
-        placeholder="Search for people"
+        placeholder="Type a name"
         style={{ display: "inline-block" }}
-        onChange={handleInputChange}
+        onChange={(e) => handleChange(e.target.value)}
       />
-      {/* <Button
+      <Button
+        onClick={handleSearch}
         icon={<MdSearch />}
         style={{
           position: "absolute",
           right: "10px",
         }}
-      /> */}
-    </div>
+      />
+    </form>
   );
 };

@@ -5,13 +5,14 @@ export const Card = ({
   style,
 }: {
   children: React.ReactNode;
-  style: React.CSSProperties;
+  style?: React.CSSProperties;
 }) => {
   return <div style={{ ...styles.container, ...style }}>{children}</div>;
 };
 
 const styles = {
   container: {
+    position: "relative",
     backgroundColor: "white",
     width: "400px",
     maxWidth: "90%",
