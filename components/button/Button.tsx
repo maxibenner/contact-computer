@@ -5,23 +5,22 @@ export const Button = ({
   style,
   icon,
   text,
+  tabindex,
   onClick,
   ...rest
 }: {
   style?: React.CSSProperties;
   icon?: any;
+  tabindex?: number;
   onClick?: () => void;
   text?: string;
 }) => {
   return (
-    <div
-      onClick={onClick}
-      // tabIndex={0}
-      style={style}
-      className={styles.container}
-    >
-      <div className={styles.iconContainer}>{icon}</div>
-      <p>{text}</p>
+    <div style={style} className={styles.wrapper}>
+      <div onClick={onClick} tabIndex={tabindex} className={styles.container}>
+        <div className={styles.iconContainer}>{icon}</div>
+        <p>{text}</p>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,27 @@
+.container {
+  background: #454ef7;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.title {
+  color: white;
+  margin-left: 10px;
+}
+.eye {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border: 2px solid black;
+  box-shadow: 2px 2px 0 #000;
+  background: white;
+}
+.eye > div:first-child {
+  width: 8px;
+  height: 8px;
+  background: black;
+  position: absolute;
+  left: 8px;
+  top: 7px;
+}

@@ -1,38 +1,24 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { Card } from "../components/card/Card";
-import { Input } from "../components/input/Input";
 import { Border } from "../components/border/Border";
-import { Dropdown } from "../components/dropdown/Dropdown";
-import { MdPublic, MdEdit, MdAdd, MdSave } from "react-icons/md";
-import { Button } from "../components/button/Button";
-import { InlineEdit } from "../components/inlineEdit/InlineEdit";
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useContext } from "react";
+import { FieldsContext } from "../context/fieldsContext";
+import { Logo } from "../components/logo/Logo";
+import { ContactCard } from "../components/contactCard/ContactCard";
+import { Search } from "../components/search/Search";
+import { ContactSearchResults } from "../components/contactSearchResults/ContactSearchResults";
+import { Contact } from "../sdk/contacts";
 
-const data = [
-  {
-    name: "Home",
-    categorie: "phone",
-    value: "+1 (929) 353-8426",
-    access: "public",
-  },
-  {
-    name: "Office",
-    categorie: "phone",
-    value: "+1 (834) 123-3214",
-    access: "friends",
-  },
-];
 const Home: NextPage = () => {
-  const [fields, setFields] = useState(data);
-  const handleFieldChange = ({ i, e }: { i: number; e: string }) => {
-    console.log(e)
-    // const fieldsNew = [...fields];
-    // fieldsNew[i].value = value;
-  };
+  const { fields, addField } = useContext(FieldsContext);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [selected, setSelected] = useState<Contact | null>(null);
 
+  const handleSelect = (contact: Contact) => {
+    setContacts([]);
+    setSelected(contact);
+  };
   return (
     <div className={styles.container}>
       <Head>
@@ -42,46 +28,26 @@ const Home: NextPage = () => {
       </Head>
       <Border />
       <main className={styles.main}>
-        <Card>
-          <h2 style={{ color: "#454ef7", fontSize: "2.4rem", marginTop: 0 }}>
-            Maximilian Benner
-          </h2>
-          <h3>Phone</h3>
-          {fields.map((field, i) => {
-            return (
-              <div style={{ display: "flex", marginTop: "8px" }}>
-                <InlineEdit
-                  value={fields[i].value}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleFieldChange({ i, e })
-                  }
-                  // onSave={(value: string) => handleFieldSave({ i, value })}
-                  iconStart={<MdEdit />}
-                  iconEnd={<MdSave />}
-                />
-                <Dropdown icon={<MdPublic />} style={{ marginLeft: "5px" }}>
-                  <h3>Test</h3>
-                </Dropdown>
-              </div>
-            );
-          })}
-
-          <Button
-            onClick={() =>
-              setFields((prev) => [
-                ...prev,
-                {
-                  name: "",
-                  categorie: "phone",
-                  value: "",
-                  access: "public",
-                },
-              ])
-            }
-            style={{ width: "100%", marginTop: "8px" }}
-            icon={<MdAdd />}
+        <div style={{ position: "absolute", top: 8, left: 8 }}>
+          <Logo />
+        </div>
+        {selected ? (
+          <ContactCard
+            onCancel={() => setSelected(null)}
+            onAdd={addField}
+            fields={fields}
+            contact={selected}
           />
-        </Card>
+        ) : (
+          <div style={{ width: "90%", maxWidth: "400px" }}>
+            <Search onResult={setContacts} />
+            <ContactSearchResults
+              onSelect={handleSelect}
+              contacts={contacts}
+              style={{ marginTop: "10px" }}
+            />
+          </div>
+        )}
       </main>
 
       <footer></footer>

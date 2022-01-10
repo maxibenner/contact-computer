@@ -17,13 +17,14 @@ body {
   min-height: 100vh;
   overflow: scroll;
   width: 100%;
+  background-color: rgb(0, 0, 10);
 
   background-image: linear-gradient(
-      hsla(237, 92%, 62%, 0.8) 1px,
-      transparent 1px
+      #0d0f2e 4px,
+      transparent 0px
     ),
-    linear-gradient(to right, hsla(237, 92%, 62%, 0.8) 1px, transparent 1px);
-  background-size: 20px 20px;
+    linear-gradient(to right, #0d0f2e 4px, transparent 0px);
+  background-size: 30px 30px;
 }
 
 a {

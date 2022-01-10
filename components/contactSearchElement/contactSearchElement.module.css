@@ -1,0 +1,29 @@
+.container {
+  background: #fff;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  cursor: pointer;
+  outline: none;
+}
+.container:hover {
+  background-color: #454ef7;
+  color: #fff;
+}
+.container:focus,
+.container:active {
+  color: #fff;
+  background-color: #454ef7;
+}
+.imgContainer {
+  flex-shrink: 0;
+  height: 40px;
+  width: 40px;
+  overflow: hidden;
+  background: rgb(226, 226, 226);
+}
+.name {
+  font-size: 1rem;
+  margin: 0 0 0 16px;
+}

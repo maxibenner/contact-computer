@@ -1,0 +1,23 @@
+.container {
+  position: relative;
+  margin-top: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.container > input {
+  width: 100%;
+  background: #fff;
+  height: 60px;
+  border: none;
+  display: inline-block;
+  padding: 0 15px 0 15px;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+.container > input:active,
+.container > input:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px #454ef7;
+}
