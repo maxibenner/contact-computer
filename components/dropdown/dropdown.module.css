@@ -1,0 +1,20 @@
+.container {
+  position: relative;
+}
+.menu_bottom {
+  position: absolute;
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+  justify-items: left;
+  left: 0px;
+  top: 100%;
+}
+.menu_left {
+  position: absolute;
+  display: flex;
+  margin-right: 6px;
+  gap: 6px;
+  right: 100%;
+  top: 0px;
+}

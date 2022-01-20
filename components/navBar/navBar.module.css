@@ -1,0 +1,36 @@
+.container {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  top: 0;
+  width: 100%;
+  background: #454ef7;
+  padding: 10px 25px;
+  height: 90px;
+}
+.navMenu {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+.navMenu > p,
+.itemWithBadge > p {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #fff;
+  cursor: pointer;
+}
+.itemWithBadge {
+  position: relative;
+}
+.itemWithBadge > div {
+  position: absolute;
+  color: white;
+  padding: 1px 5px;
+  font-size: 1.4rem;
+  background: var(--color-error);
+  box-shadow: 2px 2px 0 black;
+  top: -15px;
+  right: -15px;
+}

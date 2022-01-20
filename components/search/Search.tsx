@@ -16,6 +16,12 @@ export const Search = ({
   const handleChange = (t: string) => {
     setValue(t);
     onChange && onChange(t);
+
+    // Search after every input change (only after more than 5 characters)
+    if (value && value.length > 5) {
+      console.log("Searching after every input change");
+      handleSearch();
+    }
   };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +30,7 @@ export const Search = ({
   const handleSearch = () => {
     onSearch && onSearch(value);
   };
+
   return (
     <form className={styles.container} style={style} onSubmit={handleSubmit}>
       <input

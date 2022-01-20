@@ -8,6 +8,7 @@ body {
   background-color: #454ef7;
   width: 100%;
   height: 100%;
+  font-size: 10px;
 }
 
 a {
@@ -17,4 +18,12 @@ a {
 
 * {
   box-sizing: border-box;
+
+  /* Colors */
+  --color-main: #454ef7;
+  --color-main-light: #dadbf8;
+  --color-error: #fc5759;
+  --color-placeholder: rgb(236, 236, 236);
+  --color-grey: rgb(150, 150, 150);
+  --color-dark-grey: rgb(70, 70, 70);
 }

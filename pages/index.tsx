@@ -1,77 +1,63 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import React, { useState, useContext } from "react";
-import { FieldsContext } from "../context/fieldsContext";
-import { ContactCard } from "../components/contactCard/ContactCard";
+import localStyles from "../styles/index.module.css";
+import { useState, useEffect, useContext } from "react";
 import { Search } from "../components/search/Search";
 import { ContactSearchResults } from "../components/contactSearchResults/ContactSearchResults";
-import { Contact } from "../sdk/contacts";
-import { Button } from "../components/button/Button";
+import { ContactType } from "./contact";
 import { getContactSearchResult } from "../sdk/db";
-import Link from "next/link";
+import Router from "next/router";
+import { NotificationContext } from "../context/NotificationContext";
 
 const Home: NextPage = () => {
-  const { fields, addField } = useContext(FieldsContext);
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [selected, setSelected] = useState<Contact | null>(null);
+  const [contacts, setContacts] = useState<any>([]);
 
-  const handleSearch = () => {
-    const data = getContactSearchResult();
+  const [notification, setNotification] = useContext(NotificationContext);
+
+  const handleSearch = async (d: string) => {
+    const { data, error } = await getContactSearchResult(d);
+    if (error) {
+      console.log(error);
+    }
     setContacts(data);
   };
 
-  const handleSelect = (contact: Contact) => {
+  const handleSelect = (contact: ContactType) => {
     setContacts([]);
-    setSelected(contact);
+    Router.push(`/contact?u=${contact.id}`);
   };
 
+  // Give info to user
+  useEffect(() => {
+    setNotification({
+      title: "Hey there!",
+      description:
+        "My name is Contact Computer. I'm a privacy focused, global address book that is always up to date.",
+      type: "info",
+      buttonText: "Sounds good",
+    });
+  }, []);
+
   return (
-    <div className={styles.container}>
+    <>
       <Head>
         <title>Contact Computer</title>
         <meta name="description" content="Ask the computer anything" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <main className={styles.main}>
-        {selected ? (
-          <ContactCard
-            onCancel={() => setSelected(null)}
-            onAdd={addField}
-            fields={fields}
-            contact={selected}
+        <div className={localStyles.container}>
+          <h1 className={styles.heroText}>The global address book</h1>
+          <Search onSearch={handleSearch} />
+          <ContactSearchResults
+            onSelect={handleSelect}
+            contacts={contacts}
+            style={{ margin: "10px 0" }}
           />
-        ) : (
-          <div style={{ width: "90%", maxWidth: "400px" }}>
-            <h1
-              style={{ color: "#454ef7", marginTop: "100px", fontSize: "4rem", marginBottom: "25px" }}
-            >
-              The global address book
-            </h1>
-            <Search onSearch={handleSearch} />
-            <ContactSearchResults
-              onSelect={handleSelect}
-              contacts={contacts}
-              style={{ margin: "10px 0" }}
-            />
-            {/* <Link href="/auth">
-              <Button
-                tabindex={0}
-                style={{
-                  height: "50px",
-                  width: "100%",
-                  margin: "0 auto",
-                }}
-                text="Add your contact info"
-              />
-            </Link> */}
-          </div>
-        )}
+        </div>
       </main>
-
-      <footer></footer>
-    </div>
+    </>
   );
 };
 

@@ -1,0 +1,32 @@
+.container {
+  background: #fff;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  cursor: pointer;
+  outline: none;
+}
+.container:hover {
+  background-color: #454ef71f;
+}
+
+.contentContainer {
+  display: flex;
+  align-items: center;
+}
+.imgContainer {
+  flex-shrink: 0;
+  height: 40px;
+  width: 40px;
+  overflow: hidden;
+  background: rgb(226, 226, 226);
+}
+.name {
+  font-size: 1.6rem;
+  margin: 0 0 0 16px;
+}
+.buttonContainer {
+  display: flex;
+  gap: 6px;
+}

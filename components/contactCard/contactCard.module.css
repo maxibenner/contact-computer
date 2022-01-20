@@ -1,0 +1,25 @@
+.buttonContainer {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  left: -20px;
+  top: -20px;
+}
+.buttonContainer > button:nth-child(even) {
+  margin-top: 8px;
+}
+.imageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-main-light);
+  position: relative;
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  box-shadow: 3px 3px black;
+  margin-right: 20px;
+  font-size: 3rem;
+  color: var(--color-main);
+  cursor: pointer;
+}

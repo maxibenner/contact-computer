@@ -1,4 +1,3 @@
-import { Contact } from "../../sdk/contacts";
 import styles from "./contactSearchResults.module.css";
 import { ContactSearchElement } from "../contactSearchElement/ContactSearchElement";
 import React from "react";
@@ -8,15 +7,16 @@ export const ContactSearchResults = ({
   onSelect,
   style,
 }: {
-  contacts: Contact[];
+  contacts: any[];
   onSelect: Function;
   style: React.CSSProperties;
 }) => {
   return (
     <div className={styles.container} style={style}>
       {contacts &&
+        contacts.length > 0 &&
         contacts.map((contact) => (
-          <div onClick={() => onSelect(contact)}>
+          <div key={contact.id} onClick={() => onSelect(contact)}>
             <ContactSearchElement contact={contact} />
           </div>
         ))}

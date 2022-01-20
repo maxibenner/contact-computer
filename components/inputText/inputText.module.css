@@ -1,0 +1,94 @@
+.container {
+  position: relative;
+}
+.input {
+  position: relative;
+  box-sizing: border-box;
+  border: 2px solid rgb(233, 233, 233);
+  background: hsla(0, 0%, 100%, 1);
+  box-shadow: none;
+  width: 100%;
+  height: 61px;
+  font-size: 1.6rem;
+  padding: 18px 15px 0 15px;
+  transition: box-shadow 0.2s;
+  outline: none;
+}
+
+.label {
+  transform-origin: left;
+  pointer-events: none;
+  position: absolute;
+  left: 16px;
+  top: 20px;
+  font-size: 2rem;
+  color: rgb(127, 127, 134);
+  font-weight: 400;
+  transition: 0.3s;
+}
+.input:focus + span {
+  transform: scale(0.7) translateY(-1.6rem);
+}
+.label_focus {
+  transform: scale(0.7) translateY(-1.6rem);
+}
+.link {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--blue);
+}
+.link:hover {
+  cursor: pointer;
+  opacity: 0.75;
+}
+.input:focus,
+.input:active {
+  outline: none;
+  box-shadow: 0 0 0 4px #454ef7;
+  background: #fff;
+}
+
+/* Disabled */
+.input_disabled {
+  box-sizing: border-box;
+  border-radius: var(--borderR);
+  border: none;
+  background: rgb(255, 255, 255);
+  box-shadow: none;
+  width: 100%;
+  height: 50px;
+  font-size: 1.6rem;
+  padding: 0 15px;
+  margin-top: 3px;
+}
+.input_disabled::placeholder {
+  color: rgb(207, 207, 207);
+  font-weight: 400;
+}
+.input_disabled:focus,
+.input_disabled:active {
+  outline: none;
+}
+
+/* Cancel */
+.cancelButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: rgb(180, 180, 180);
+  border-radius: 4px;
+  cursor: pointer;
+  position: absolute;
+  bottom: 13px;
+  right: 16px;
+}
+.cancelButton:hover {
+  background: rgb(230, 230, 230);
+  /* color: white; */
+}
+.labelContainer {
+  display: flex;
+  justify-content: space-between;
+}

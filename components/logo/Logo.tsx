@@ -15,11 +15,10 @@ export const Logo = () => {
     // Set eye pos
     setLeftEyePos([12 * xPercent, 13 * yPercent]);
     setRightEyePos([12 * xPercent, 13 * yPercent]);
-    console.log(`${mousePos[0]}, ${window.innerWidth}`);
   }, [mousePos]);
 
   return (
-    <div className={styles.container} onMouseMove={() => console.log("test")}>
+    <div className={styles.container} /*onMouseMove={() => console.log("test")}*/>
       <div
         className={styles.eye}
         style={{ marginTop: "-5px", marginRight: "-5px", zIndex: 2 }}
