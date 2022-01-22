@@ -72,11 +72,12 @@ export const db_getContact = async (id: string) => {
         contact_follows: false,
       });
     });
+    console.log(follows_contact);
 
     contact_follows.forEach((contact) => {
       const key = contact.owner.id;
       if (contactsObj[key]) {
-        contactsObj[key] = { ...contactsObj[key], follows_contact: true };
+        contactsObj[key] = { ...contactsObj[key], contact_follows: true };
       } else {
         contactsObj[key] = <TransformedConnectionType>{
           contact: contact.owner,

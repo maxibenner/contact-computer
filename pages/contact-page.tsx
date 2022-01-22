@@ -35,15 +35,14 @@ export default function ContactPage() {
     }
   };
 
+  // TODO
   // Check for relationship between user and selected contact
   const [relationship, setRelationship] = useState<Relationship>(null);
   useEffect(() => {
     const relationShip = checkRelationship(profile, contact);
     setRelationship(relationShip);
-  }, [profile, contact]);
-
-  // Print for dev
-  useEffect(() => console.log(relationship), [relationship]);
+    console.log(relationship);
+  }, [contact]);
 
   // Handle contact request
   const [contactRequestLoading, setContactRequestLoading] = useState(false);
@@ -51,7 +50,7 @@ export default function ContactPage() {
     if (profile && typeof profile.id === "string" && contact) {
       setContactRequestLoading(true);
       await sendContactRequest(contact.id);
-      console.log("3. Stopped animation")
+      console.log("3. Stopped animation");
       setContactRequestLoading(false);
     } else
       setNotification({
@@ -73,7 +72,7 @@ export default function ContactPage() {
         if (contact.requests_received[i].recipient_id === contact.id) {
           setPendingRequest(true);
           break;
-        } // else setPendingRequest(false);
+        }
       }
     }
   };

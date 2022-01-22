@@ -9,7 +9,7 @@ import {
   DataType,
   Relationship,
   SingleLineData,
-  TransformedConnectionType
+  TransformedConnectionType,
 } from "../../sdk/db";
 import { AddressField } from "../addressField/AddressField";
 import { Button } from "../button/Button";

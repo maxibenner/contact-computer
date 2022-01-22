@@ -28,7 +28,7 @@ export default function Contact() {
             <ContactListElement
               requests={profile.requests_received}
               key={c.contact.id}
-              data={c}
+              contact={c}
               onClick={() =>
                 Router.push(`/contact-page?u=${c.contact.id}&o=/contacts`)
               }
