@@ -26,7 +26,7 @@ export default function Contact() {
           ))}
           {profile?.contact.map((c) => (
             <ContactListElement
-              // requests={profile.requests_received}
+              requests={profile.requests_received}
               key={c.contact.id}
               data={c}
               onClick={() =>

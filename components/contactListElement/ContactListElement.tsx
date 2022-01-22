@@ -1,22 +1,19 @@
 import Image from "next/image";
+import { useContext, useEffect, useState } from "react";
 import { MdGroupAdd } from "react-icons/md";
-import { ContactType, TransformedConnectionType } from "../../sdk/db";
+import { ProfileContext } from "../../context/ProfileContext";
+import { Request, TransformedConnectionType } from "../../sdk/db";
 import { Button } from "../button/Button";
 import styles from "./contactListElement.module.css";
-import { ProfileContext } from "../../context/ProfileContext";
-import { useContext, useEffect, useState } from "react";
-// import { checkRelationshipWithoutLoop } from "../../utils/checkRelationship";
 
 export const ContactListElement = ({
   data,
-  // contact,
   onClick,
-  // requests,
+  requests,
 }: {
   data: TransformedConnectionType;
-  // contact: TransformedConnectionType;
   onClick?: () => void;
-  // requests: Request[];
+  requests: Request[];
 }) => {
   const { profile, sendContactRequest, reloadData } =
     useContext(ProfileContext);
@@ -53,11 +50,11 @@ export const ContactListElement = ({
   // }, [profile, data]);
 
   // // Check if there is currently a. incoming request and hit contact accordingly
-  // for (let i = 0; i < requests.length; i++) {
-  //   if (requests[i].recipient_id === profile?.id) {
-  //     return null;
-  //   }
-  // }
+  for (let i = 0; i < requests.length; i++) {
+    if (requests[i].recipient_id === profile?.id) {
+      return null;
+    }
+  }
 
   return (
     <div tabIndex={0} className={styles.container}>
