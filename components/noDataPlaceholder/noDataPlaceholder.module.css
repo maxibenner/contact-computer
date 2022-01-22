@@ -1,0 +1,11 @@
+.noDataContainer {
+  background: rgb(243, 243, 255);
+  display: flex;
+  justify-content: center;
+  font-size: 1.6rem;
+  padding: 10px;
+  text-align: center;
+}
+.noDataContainer > p {
+  color: var(--color-main-light);
+}

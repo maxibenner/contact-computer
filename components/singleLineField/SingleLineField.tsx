@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, useContext } from "react";
 import {
   MdOutlineFavorite,
   MdPublic,
@@ -11,9 +11,10 @@ import {
 import { Button } from "../button/Button";
 import { InputTextBasic } from "../inputTextBasic/InputTextBasic";
 import styles from "./singleLineField.module.css";
-import { SingleLineData } from "../../pages/contact";
+import { SingleLineData } from "../../sdk/db";
 import { Dropdown } from "../dropdown/Dropdown";
 import { Spinner } from "../spinner/Spinner";
+import { ProfileContext } from "../../context/ProfileContext";
 
 /**
  * An element displaying user data
@@ -25,16 +26,12 @@ import { Spinner } from "../spinner/Spinner";
  */
 export const SingleLineField = ({
   data: { id, owner_id, label, value, access, startEditing },
-  onSave,
   onCancel,
-  onDelete,
   editable,
-  loadingEndToggle,
   type,
   self,
 }: {
   data: SingleLineData & { startEditing?: boolean };
-  onSave: ({ id, label, value, access, owner_id }: SingleLineData) => void;
   onCancel: ({
     id,
     type,
@@ -42,12 +39,15 @@ export const SingleLineField = ({
     id: number | string | null;
     type: "phone" | "email" | "web" | "address";
   }) => void;
-  onDelete: ({ id, label, value, access, owner_id }: SingleLineData) => void;
   editable?: boolean;
-  loadingEndToggle?: boolean;
   type: "phone" | "email" | "web";
   self: boolean;
 }) => {
+  const { saveContactInfo, deleteContactInfo } = useContext(ProfileContext);
+
+  const [submissionLoading, setSubmissionLoading] = useState(false);
+  const [deletionLoading, setDeletionLoading] = useState(false);
+
   const [editing, setEditing] = useState(false);
 
   const [icon, setIcon] = useState<ReactNode>();
@@ -57,14 +57,6 @@ export const SingleLineField = ({
   const [accessOutsideToggle, setAccessOutsideToggle] = useState(false);
 
   const [placeholder, setPlaceholder] = useState<string>();
-
-  const [loading, setLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  useEffect(() => {
-    setLoading(false);
-    setDeleteLoading(false);
-    setEditing(false);
-  }, [loadingEndToggle]);
 
   const [newLabel, setNewLabel] = useState<string>(label);
   const [newValue, setNewValue] = useState<string>(value);
@@ -93,29 +85,29 @@ export const SingleLineField = ({
   }, [access, newAccess]);
 
   // Submit data to parent
-  const handleSave = () => {
-    onSave({
-      id: id,
-      label: newLabel,
-      value: newValue,
-      access: newAccess,
-      owner_id: owner_id || null,
-    });
-    setLoading(true);
+  const handleSave = async () => {
+    setSubmissionLoading(true);
+    await saveContactInfo(
+      {
+        id: id,
+        label: newLabel,
+        value: newValue,
+        access: newAccess,
+        owner_id: owner_id,
+      },
+      type
+    );
+    setEditing(false);
+    setSubmissionLoading(false);
     setHasChanged(false);
   };
 
   // Submit delete data to parent
-  const handlDelete = () => {
-    onDelete({
-      id: id,
-      label: newLabel,
-      value: newValue,
-      access: newAccess,
-      owner_id: owner_id || null,
-    });
-    setDeleteLoading(true);
-    true;
+  const handlDelete = async () => {
+    setDeletionLoading(true);
+    if (typeof id === "number") {
+      await deleteContactInfo(id, type);
+    }
     setHasChanged(false);
   };
 
@@ -202,10 +194,16 @@ export const SingleLineField = ({
         <Button
           onClick={hasChanged ? handleSave : handleCancel}
           icon={
-            loading ? <Spinner small /> : hasChanged ? <MdSave /> : <MdAdd />
+            submissionLoading ? (
+              <Spinner small />
+            ) : hasChanged ? (
+              <MdSave />
+            ) : (
+              <MdAdd />
+            )
           }
           backgroundColor={
-            loading
+            submissionLoading
               ? "var(--color-main)"
               : hasChanged
               ? "var(--color-main)"
@@ -213,7 +211,7 @@ export const SingleLineField = ({
           }
           iconStyle={{
             fontSize: hasChanged ? "unset" : "3rem",
-            transform: loading
+            transform: submissionLoading
               ? "rotate(0deg)"
               : hasChanged
               ? "rotate(0deg)"
@@ -222,7 +220,7 @@ export const SingleLineField = ({
         />
         <Button
           onClick={handlDelete}
-          icon={deleteLoading ? <Spinner small /> : <MdDelete />}
+          icon={deletionLoading ? <Spinner small /> : <MdDelete />}
           backgroundColor={"var(--color-error)"}
         />
       </div>

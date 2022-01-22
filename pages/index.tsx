@@ -5,18 +5,20 @@ import localStyles from "../styles/index.module.css";
 import { useState, useEffect, useContext } from "react";
 import { Search } from "../components/search/Search";
 import { ContactSearchResults } from "../components/contactSearchResults/ContactSearchResults";
-import { ContactType } from "./contact";
-import { getContactSearchResult } from "../sdk/db";
+import { ContactType } from "../sdk/db";
+import { db_getContactSearchResult } from "../sdk/db";
 import Router from "next/router";
 import { NotificationContext } from "../context/NotificationContext";
+import { AuthContext } from "../context/AuthContext";
 
 const Home: NextPage = () => {
   const [contacts, setContacts] = useState<any>([]);
+  const user = useContext(AuthContext);
 
   const [notification, setNotification] = useContext(NotificationContext);
 
   const handleSearch = async (d: string) => {
-    const { data, error } = await getContactSearchResult(d);
+    const { data, error } = await db_getContactSearchResult(d);
     if (error) {
       console.log(error);
     }
@@ -25,7 +27,10 @@ const Home: NextPage = () => {
 
   const handleSelect = (contact: ContactType) => {
     setContacts([]);
-    Router.push(`/contact?u=${contact.id}`);
+
+    // Send user to profile on self-select, otherwise, send to contact-page
+    if (user && user.id === contact.id) Router.push(`/profile`);
+    else Router.push(`/contact-page?u=${contact.id}&o=/`);
   };
 
   // Give info to user

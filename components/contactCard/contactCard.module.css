@@ -23,3 +23,13 @@
   color: var(--color-main);
   cursor: pointer;
 }
+.noDataContainer {
+  background: rgb(243, 243, 255);
+  display: flex;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+.noDataContainer > p {
+  /* color: rgb(166, 166, 255); */
+  color: var(--color-main-light);
+}

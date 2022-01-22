@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, useContext } from "react";
 import {
   MdOutlineFavorite,
   MdPublic,
@@ -8,12 +8,13 @@ import {
   MdDelete,
   MdAdd,
 } from "react-icons/md";
-import { AddressData } from "../../pages/contact";
+import { Access, AddressData } from "../../sdk/db";
 import { Button } from "../button/Button";
 import { InputTextBasic } from "../inputTextBasic/InputTextBasic";
 import styles from "./addressField.module.css";
 import { Dropdown } from "../dropdown/Dropdown";
 import { Spinner } from "../spinner/Spinner";
+import { ProfileContext } from "../../context/ProfileContext";
 
 export const AddressField = ({
   data: {
@@ -28,34 +29,11 @@ export const AddressField = ({
     startEditing,
     owner_id,
   },
-  onSave,
   onCancel,
-  onDelete,
   editable,
-  loadingEndToggle,
   self,
 }: {
   data: AddressData & { startEditing?: boolean };
-  onSave: ({
-    id,
-    label,
-    street,
-    city,
-    postal,
-    state,
-    country,
-    access,
-  }: {
-    id: number | string | null;
-    label: string;
-    street: string;
-    city: string;
-    postal: string;
-    state: string;
-    country: string;
-    access: "public" | "contacts" | "friends";
-    owner_id: string | null;
-  }) => void;
   onCancel: ({
     id,
     type,
@@ -63,30 +41,14 @@ export const AddressField = ({
     id: number | string | null;
     type: "phone" | "email" | "web" | "address";
   }) => void;
-  onDelete: ({
-    id,
-    label,
-    street,
-    city,
-    postal,
-    state,
-    country,
-    access,
-  }: {
-    id: number | string | null;
-    label: string;
-    street: string;
-    city: string;
-    postal: string;
-    state: string;
-    country: string;
-    access: "public" | "contacts" | "friends";
-    owner_id: string | null;
-  }) => void;
   editable: boolean;
-  loadingEndToggle?: boolean;
   self: boolean;
 }) => {
+  const { saveContactInfo, deleteContactInfo } = useContext(ProfileContext);
+
+  const [submissionLoading, setSubmissionLoading] = useState(false);
+  const [deletionLoading, setDeletionLoading] = useState(false);
+
   // Track state of element writing || viewing
   const [editing, setEditing] = useState(false);
 
@@ -98,17 +60,6 @@ export const AddressField = ({
 
   // Enables closing of dropdown from parent component
   const [accessOutsideToggle, setAccessOutsideToggle] = useState(false);
-
-  // Submit spinner
-  const [loading, setLoading] = useState(false);
-
-  // Delete spinner
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  useEffect(() => {
-    setLoading(false);
-    setEditing(false);
-    setDeleteLoading(false);
-  }, [loadingEndToggle]);
 
   // Track data
   const [newLabel, setNewLabel] = useState(label);
@@ -132,37 +83,34 @@ export const AddressField = ({
   }, [access, newAccess]);
 
   // Submit data to parent
-  const handleSave = () => {
-    onSave({
-      id: id,
-      label: newLabel,
-      street: newStreet,
-      city: newCity,
-      postal: newPostal,
-      state: newState,
-      country: newCountry,
-      access: newAccess,
-      owner_id: owner_id || null,
-    });
-    setLoading(true);
+  const handleSave = async () => {
+    setSubmissionLoading(true);
+    await saveContactInfo(
+      {
+        id: id,
+        label: newLabel,
+        street: newStreet,
+        city: newCity,
+        postal: newPostal,
+        state: newState,
+        country: newCountry,
+        access: newAccess,
+        owner_id: owner_id,
+      },
+      "address"
+    );
+    setEditing(false);
+    setSubmissionLoading(false);
     setHasChanged(false);
   };
 
   // Submit deletion data to parent
-  const handleDelete = () => {
-    onDelete({
-      id: id,
-      label: newLabel,
-      street: newStreet,
-      city: newCity,
-      postal: newPostal,
-      state: newState,
-      country: newCountry,
-      access: newAccess,
-      owner_id: owner_id || null,
-    });
-    setDeleteLoading(true);
-    setHasChanged(false);
+  const handleDelete = async () => {
+    if (typeof id === "number") {
+      setDeletionLoading(true);
+      await deleteContactInfo(id, "address");
+      setHasChanged(false);
+    }
   };
 
   // Cancel editing or remove new, unsaved element
@@ -272,10 +220,16 @@ export const AddressField = ({
         <Button
           onClick={hasChanged ? handleSave : handleCancel}
           icon={
-            loading ? <Spinner small /> : hasChanged ? <MdSave /> : <MdAdd />
+            submissionLoading ? (
+              <Spinner small />
+            ) : hasChanged ? (
+              <MdSave />
+            ) : (
+              <MdAdd />
+            )
           }
           backgroundColor={
-            loading
+            submissionLoading
               ? "var(--color-main)"
               : hasChanged
               ? "var(--color-main)"
@@ -283,7 +237,7 @@ export const AddressField = ({
           }
           iconStyle={{
             fontSize: hasChanged ? "unset" : "3rem",
-            transform: loading
+            transform: submissionLoading
               ? "rotate(0deg)"
               : hasChanged
               ? "rotate(0deg)"
@@ -292,7 +246,7 @@ export const AddressField = ({
         />
         <Button
           onClick={handleDelete}
-          icon={deleteLoading ? <Spinner small /> : <MdDelete />}
+          icon={deletionLoading ? <Spinner small /> : <MdDelete />}
           backgroundColor={"var(--color-error)"}
         />
       </div>

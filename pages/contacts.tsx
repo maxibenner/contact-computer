@@ -1,18 +1,15 @@
-import { User } from "@supabase/supabase-js";
 import Head from "next/head";
-import { ContactCard } from "../components/contactCard/ContactCard";
-import { getContact } from "../sdk/db";
-import { supabase } from "../sdk/supabase";
-import styles from "../styles/Home.module.css";
-import { Card } from "../components/card/Card";
-import { ProfileContext } from "../context/ProfileContext";
+import Router from "next/router";
 import { useContext } from "react";
+import { Card } from "../components/card/Card";
 import { ContactListElement } from "../components/contactListElement/ContactListElement";
-import { Button } from "../components/button/Button";
+import { NoDataPlaceholder } from "../components/noDataPlaceholder/NoDataPlaceholder";
+import { RequestListElement } from "../components/requestListElement/RequestListElement";
+import { ProfileContext } from "../context/ProfileContext";
+import styles from "../styles/Home.module.css";
 
 export default function Contact() {
-  const profile = useContext(ProfileContext);
-  console.log(profile);
+  const { profile } = useContext(ProfileContext);
 
   return (
     <div className={styles.container}>
@@ -23,43 +20,26 @@ export default function Contact() {
       </Head>
       <main className={styles.main}>
         <Card style={{ margin: "10vh 35px 70px 35px" }}>
-          <h1 style={{ fontSize: "4rem" }}>Contacts</h1>
-          {profile?.request.map((request) => (
+          <h1 style={{ fontSize: "4rem", margin: "0 0 24px 0" }}>Contacts</h1>
+          {profile?.requests_received.map((request) => (
+            <RequestListElement key={request.owner.id} data={request} />
+          ))}
+          {profile?.contact.map((c) => (
             <ContactListElement
-              key={request.owner_id}
-              contact={request.owner}
-              onAccept={(access) =>
-                console.log(
-                  `Accepting: ${request.owner.name} ${request.owner.surname} with access "${access}."`
-                )
-              }
-              onDecline={() =>
-                console.log(
-                  `Declining: ${request.owner.name} ${request.owner.surname}`
-                )
+              // requests={profile.requests_received}
+              key={c.contact.id}
+              data={c}
+              onClick={() =>
+                Router.push(`/contact-page?u=${c.contact.id}&o=/contacts`)
               }
             />
           ))}
-          <hr />
-          {profile?.connection.map((c) => (
-            <ContactListElement key={c.connection_id} contact={c.owner} />
-          ))}
+          {profile?.contact.length === 0 &&
+            profile?.requests_received.length === 0 && (
+              <NoDataPlaceholder text="No contacts" />
+            )}
         </Card>
       </main>
     </div>
   );
-}
-
-export async function getServerSideProps({ req, query }: any) {
-  const { user } = await supabase.auth.api.getUserByCookie(req);
-
-  if (user) {
-    return {
-      props: {},
-    };
-  } else {
-    return {
-      redirect: { destination: "/signin", permanent: false },
-    };
-  }
 }

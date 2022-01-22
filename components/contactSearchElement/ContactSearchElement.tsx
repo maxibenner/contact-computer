@@ -1,4 +1,3 @@
-import { Contact } from "../../sdk/contacts";
 import styles from "./contactSearchElement.module.css";
 import Image from "next/image";
 export const ContactSearchElement = ({ contact }: { contact: any }) => {

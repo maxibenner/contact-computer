@@ -2,17 +2,22 @@ import styles from "./navBar.module.css";
 import { Logo } from "../logo/Logo";
 import { SpeechBubble } from "../speechBubble/SpeechBubble";
 import { NotificationContext } from "../../context/NotificationContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "../button/Button";
 import { AuthContext } from "../../context/AuthContext";
 import { signOut } from "../../sdk/auth";
 import { ProfileContext } from "../../context/ProfileContext";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 export const NavBar = () => {
+  const router = useRouter();
   const [notification, setNotification] = useContext(NotificationContext);
-  const profile = useContext(ProfileContext);
+  const { profile } = useContext(ProfileContext);
   const user = useContext(AuthContext);
+
+  useEffect(() => {}, [user]);
 
   return (
     <div className={styles.container}>
@@ -30,10 +35,17 @@ export const NavBar = () => {
             <Link href="/contacts">
               <div className={styles.itemWithBadge}>
                 <p>Contacts</p>
-                {profile && <div>{profile?.request.length}</div>}
+                {profile?.requests_received &&
+                  profile?.requests_received.length > 0 && (
+                    <div>{profile?.requests_received.length}</div>
+                  )}
               </div>
             </Link>
-            <Link href="/contact">
+            <Link
+              href={{
+                pathname: "/profile",
+              }}
+            >
               <p>Profile</p>
             </Link>
             <Button

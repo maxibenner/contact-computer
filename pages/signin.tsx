@@ -60,7 +60,7 @@ const SignIn: NextPage = () => {
             buttonText: "Ok",
           });
         }
-      } else Router.push("/contact");
+      } else Router.push("/");
     });
   };
 

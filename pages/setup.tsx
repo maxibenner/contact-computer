@@ -44,7 +44,7 @@ export default function Setup() {
     image: File | null;
   }) => {
     // Check if information is complete
-    if (name && surname && image) {
+    if (name && surname && image && user) {
       // Set loading state
       setIsSubmitting(true);
 
@@ -101,7 +101,7 @@ export default function Setup() {
       }
 
       // Send to profile on success
-      Router.push("/contact");
+      Router.push("/contact-page");
     } else {
       // Missing information
 

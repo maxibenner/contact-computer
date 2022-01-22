@@ -1,5 +1,6 @@
 import styles from "./Button.module.css";
 import { Spinner } from "../spinner/Spinner";
+import React, { useEffect, MouseEventHandler } from "react";
 
 export const Button = ({
   style,
@@ -20,17 +21,30 @@ export const Button = ({
   icon?: any;
   inactive?: boolean;
   tabindex?: number;
-  onClick?: () => void;
+  onClick?: Function;
   loading?: boolean;
   text?: string;
 }) => {
   return (
-    <button style={style} className={styles.wrapper}>
+    <button
+      style={{
+        opacity: inactive ? 0.4 : 1,
+        ...style,
+      }}
+      className={styles.wrapper}
+    >
       <div
-        onClick={onClick}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick && onClick();
+        }}
         tabIndex={tabindex}
-        className={inactive ? styles.container_inactive : styles.container}
-        style={{ ...innerStyle, background: backgroundColor }}
+        className={styles.container}
+        style={{
+          ...innerStyle,
+          background: backgroundColor,
+          pointerEvents: inactive || loading ? "none" : "all",
+        }}
       >
         <div
           className={styles.iconContainer}

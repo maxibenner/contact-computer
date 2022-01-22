@@ -49,6 +49,7 @@
   justify-content: center;
   font-size: 2rem;
   border: 2px solid black;
+  background: var(--color-grey);
 }
 .container_inactive > p,
 .container_inactive > div {

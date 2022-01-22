@@ -14,8 +14,6 @@
 .contentContainer {
   display: flex;
   align-items: center;
-  width: 100%;
-  margin-right: 6px;
 }
 .imgContainer {
   flex-shrink: 0;

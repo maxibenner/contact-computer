@@ -24,6 +24,7 @@ a {
   --color-main-light: #dadbf8;
   --color-error: #fc5759;
   --color-placeholder: rgb(236, 236, 236);
-  --color-grey: rgb(150, 150, 150);
+  /* --color-grey: rgb(150, 150, 150); */
+  --color-grey: #b0b2c5;
   --color-dark-grey: rgb(70, 70, 70);
 }

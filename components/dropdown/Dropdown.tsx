@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from "react";
+import { CSSProperties, MouseEventHandler, ReactNode } from "react";
 import { Button } from "../button/Button";
 import styles from "./dropdown.module.css";
 import { useState, useEffect } from "react";
@@ -14,6 +14,7 @@ export const Dropdown = ({
   position = "bottom",
   noVisualChange,
   iconActive,
+  loading = false,
 }: {
   children: ReactNode;
   style?: CSSProperties;
@@ -25,6 +26,7 @@ export const Dropdown = ({
   position?: "bottom" | "left";
   noVisualChange?: boolean;
   iconActive?: any;
+  loading?: boolean;
 }) => {
   const [isActive, setIsActive] = useState(false);
 
@@ -41,16 +43,12 @@ export const Dropdown = ({
     else setBackgroundColor("var(--color-main)");
   }, [isActive, inactive]);
 
-  const handleToggle = () => {
-    if (!inactive) setIsActive((prev) => !prev);
-
-    // Pass event to parent
-    // onClick();
-  };
+  const handleToggle = () => !inactive && setIsActive((prev) => !prev);
 
   return (
     <div className={styles.container} style={style}>
       <Button
+        loading={loading}
         inactive={inactive}
         icon={isActive ? (iconActive ? iconActive : icon) : icon}
         style={buttonStyle}

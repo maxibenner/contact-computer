@@ -1,56 +1,48 @@
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
-import Link from "next/link";
-import { CSSProperties, useEffect, useState, useContext } from "react";
+import { useRouter } from "next/router";
+import { CSSProperties, useEffect, useState } from "react";
 import { MdAdd, MdArrowBack, MdGroupAdd, MdOutlineClose } from "react-icons/md";
-import { AddressData, ContactType, SingleLineData } from "../../pages/contact";
+import {
+  AddressData,
+  ContactType,
+  DataType,
+  Relationship,
+  SingleLineData,
+  TransformedConnectionType
+} from "../../sdk/db";
 import { AddressField } from "../addressField/AddressField";
 import { Button } from "../button/Button";
 import { Card } from "../card/Card";
 import { Dropdown } from "../dropdown/Dropdown";
+import { NoDataPlaceholder } from "../noDataPlaceholder/NoDataPlaceholder";
 import { SingleLineField } from "../singleLineField/SingleLineField";
+import { Spinner } from "../spinner/Spinner";
 import styles from "./contactCard.module.css";
-import { NotificationContext } from "../../context/NotificationContext";
-import { sendContactRequest } from "../../sdk/db";
 
 export const ContactCard = ({
   contact,
   style,
   backHref,
-  onSave,
-  onDelete,
-  onRequest,
-  self,
-  doneSaving,
+  relationship,
+  onSendContactRequest,
+  contactRequestLoading,
+  pendingContactRequest,
   user,
 }: {
-  contact: ContactType;
+  contact: ContactType & { contact: TransformedConnectionType[] };
   style?: CSSProperties;
   backHref: string;
-  onSave: ({
-    data,
-    type,
-  }: {
-    data: SingleLineData | AddressData;
-    type: "phone" | "email" | "web" | "address";
-  }) => void;
-  onDelete: ({
-    data,
-    type,
-  }: {
-    data: SingleLineData | AddressData;
-    type: "phone" | "email" | "web" | "address";
-  }) => void;
-  onRequest: () => void;
-  self: boolean;
-  doneSaving?: boolean;
+  relationship: Relationship;
+  onSendContactRequest: () => void;
+  contactRequestLoading: boolean;
+  pendingContactRequest: boolean;
   user: User | null;
 }) => {
+  const router = useRouter();
+
   // Toggle add dropdown
   const [dropdownToggle, setDropdownToggle] = useState(false);
-
-  // Notifications
-  const [notification, setNotification] = useContext(NotificationContext);
 
   // Local copy of contact data and keep updated
   const [localContact, setLocalContact] = useState<ContactType>(contact);
@@ -59,60 +51,52 @@ export const ContactCard = ({
   // Track if a field is currently being edited
   const [activeEdit, setActiveEdit] = useState(false);
 
-  // Pulse fields to end loading
-  const [fieldLoadingPulse, setFieldLoadingPulse] = useState(false);
-
-  // Contact request loading
-  const [contactRequestLoading, setContactRequestLoading] = useState(false);
-
-  // ReEnable adding
-  useEffect(() => {
-    setActiveEdit(false);
-    setFieldLoadingPulse((prev) => !prev);
-    setContactRequestLoading(false);
-  }, [doneSaving]);
+  // LOADING STATES
+  const [isProfileImage, setIsProfileImage] = useState(false);
 
   // Add new field to local data copy
-  const handleAddData = (type: "phone" | "email" | "web" | "address") => {
-    // Set to active editing
-    setActiveEdit(true);
+  const handleAddData = (type: DataType) => {
+    if (user) {
+      // Set to active editing
+      setActiveEdit(true);
 
-    // Create copy of data
-    const contactCopy = { ...localContact };
+      // Create copy of data
+      const contactCopy = { ...localContact };
 
-    // Create arbitrary id to facilitate cancel operation
-    const randomId = (Math.random() * 99999999).toFixed(0) + "_local";
-    console.log(randomId);
+      // Create arbitrary id to facilitate cancel operation
+      const randomId = (Math.random() * 99999999).toFixed(0) + "_local";
+      console.log(randomId);
 
-    // Push cappropriate data
-    if (type === "address") {
-      contactCopy.address.push({
-        id: randomId,
-        label: "",
-        access: "public",
-        street: "",
-        city: "",
-        state: "",
-        postal: "",
-        country: "",
-        startEditing: true,
-        owner_id: null,
-      } as AddressData & { startEditing: boolean });
-    } else
-      contactCopy[type].push({
-        id: randomId,
-        label: "",
-        value: "",
-        access: "public",
-        startEditing: true,
-        owner_id: null,
-      } as SingleLineData & { startEditing: boolean });
+      // Push cappropriate data
+      if (type === "address") {
+        contactCopy.address.push({
+          id: randomId,
+          label: "",
+          access: "public",
+          street: "",
+          city: "",
+          state: "",
+          postal: "",
+          country: "",
+          startEditing: true,
+          owner_id: user.id,
+        } as AddressData & { startEditing: boolean });
+      } else
+        contactCopy[type].push({
+          id: randomId,
+          label: "",
+          value: "",
+          access: "public",
+          startEditing: true,
+          owner_id: user.id,
+        } as SingleLineData & { startEditing: boolean });
 
-    // Close add field dropdown
-    setDropdownToggle((prev) => !prev);
+      // Close add field dropdown
+      setDropdownToggle((prev) => !prev);
 
-    // Update local data copy
-    setLocalContact(contactCopy);
+      // Update local data copy
+      setLocalContact(contactCopy);
+    }
   };
 
   // LOCAL: Remove unsaved data from local copy
@@ -140,18 +124,31 @@ export const ContactCard = ({
     setActiveEdit(false);
   };
 
-  const handleRequest = () => {
-    setContactRequestLoading(true);
-    onRequest();
-  };
-
   return (
     <Card style={style}>
       {/* Main */}
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", marginBottom: "25px" }}>
           <div className={styles.imageContainer}>
-            <Image objectFit="cover" layout="fill" src={localContact.img_src} />
+            <div
+              style={{
+                opacity: isProfileImage ? 1 : 0,
+                position: isProfileImage ? "relative" : "absolute",
+                width: "100%",
+                height: "100%",
+                transition: ".3s",
+              }}
+            >
+              <Image
+                onLoadingComplete={() => setIsProfileImage(true)}
+                objectFit="cover"
+                layout="fill"
+                src={localContact.img_src}
+              />
+            </div>
+            <div style={{ display: isProfileImage ? "none" : "unset" }}>
+              <Spinner />
+            </div>
           </div>
           <h1
             style={{ fontSize: "2.8rem", margin: 0 }}
@@ -167,12 +164,9 @@ export const ContactCard = ({
                   key={email.value}
                   type="email"
                   data={email}
-                  onSave={(data) => onSave({ data: data, type: "email" })}
                   onCancel={handleCancel}
-                  onDelete={(data) => onDelete({ data: data, type: "email" })}
-                  editable={self}
-                  loadingEndToggle={fieldLoadingPulse}
-                  self={self}
+                  editable={relationship === "self"}
+                  self={relationship === "self"}
                 />
               ))}
             </>
@@ -185,12 +179,9 @@ export const ContactCard = ({
                   key={phone.value}
                   type="phone"
                   data={phone}
-                  onSave={(data) => onSave({ data: data, type: "phone" })}
                   onCancel={handleCancel}
-                  onDelete={(data) => onDelete({ data: data, type: "phone" })}
-                  editable={self}
-                  loadingEndToggle={fieldLoadingPulse}
-                  self={self}
+                  editable={relationship === "self"}
+                  self={relationship === "self"}
                 />
               ))}
             </>
@@ -203,12 +194,9 @@ export const ContactCard = ({
                   key={web.value}
                   type="web"
                   data={web}
-                  onSave={(data) => onSave({ data: data, type: "web" })}
                   onCancel={handleCancel}
-                  onDelete={(data) => onDelete({ data: data, type: "web" })}
-                  editable={self}
-                  loadingEndToggle={fieldLoadingPulse}
-                  self={self}
+                  editable={relationship === "self"}
+                  self={relationship === "self"}
                 />
               ))}
             </>
@@ -220,18 +208,21 @@ export const ContactCard = ({
                 <AddressField
                   key={address.street}
                   data={address}
-                  onSave={(data) => onSave({ data: data, type: "address" })}
                   onCancel={handleCancel}
-                  onDelete={(data) => onDelete({ data: data, type: "address" })}
-                  editable={self}
-                  loadingEndToggle={fieldLoadingPulse}
-                  self={self}
+                  editable={relationship === "self"}
+                  self={relationship === "self"}
                 />
               ))}
             </>
           )}
+          {localContact.phone.length === 0 &&
+            localContact.email.length === 0 &&
+            localContact.web.length === 0 &&
+            localContact.address.length === 0 && (
+              <NoDataPlaceholder text="No Data" />
+            )}
         </div>
-        {self ? (
+        {relationship === "self" ? (
           <Dropdown
             outsideToggle={dropdownToggle}
             inactive={activeEdit}
@@ -262,26 +253,29 @@ export const ContactCard = ({
           </Dropdown>
         ) : (
           <>
-            <Link href={backHref}>
-              <a>
-                <Button
-                  icon={<MdArrowBack />}
-                  style={{ position: "absolute", top: -20, left: -20 }}
-                />
-              </a>
-            </Link>
-            {!self && (
+            {backHref && (
               <Button
-                onClick={contact.request[0] ? undefined : handleRequest}
-                inactive={contact.request[0] ? true : false}
-                text={contact.request[0] ? "Request pending" : "Add contact"}
+                onClick={() => router.push(backHref)}
+                icon={<MdArrowBack />}
+                style={{ position: "absolute", top: -20, left: -20 }}
+              />
+            )}
+            {relationship !== "follower" && relationship !== "requesting" && (
+              <Button
+                onClick={onSendContactRequest}
+                text={"Request access"}
                 iconStyle={{ fontSize: "2.6rem" }}
                 style={{ marginTop: "25px" }}
-                icon={contact.request[0] ? undefined : <MdGroupAdd />}
+                icon={<MdGroupAdd />}
                 loading={contactRequestLoading}
-                backgroundColor={
-                  contact.request[0] ? "var(--color-grey)" : "var(--color-main)"
-                }
+                inactive={pendingContactRequest}
+              />
+            )}
+            {relationship === "requesting" && (
+              <Button
+                style={{ marginTop: "25px" }}
+                inactive
+                text="Request pending"
               />
             )}
           </>
