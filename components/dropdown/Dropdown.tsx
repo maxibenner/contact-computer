@@ -14,6 +14,7 @@ export const Dropdown = ({
   position = "bottom",
   noVisualChange,
   iconActive,
+  text,
   loading = false,
 }: {
   children: ReactNode;
@@ -26,6 +27,7 @@ export const Dropdown = ({
   position?: "bottom" | "left";
   noVisualChange?: boolean;
   iconActive?: any;
+  text?: string;
   loading?: boolean;
 }) => {
   const [isActive, setIsActive] = useState(false);
@@ -48,6 +50,7 @@ export const Dropdown = ({
   return (
     <div className={styles.container} style={style}>
       <Button
+        text={text}
         loading={loading}
         inactive={inactive}
         icon={isActive ? (iconActive ? iconActive : icon) : icon}

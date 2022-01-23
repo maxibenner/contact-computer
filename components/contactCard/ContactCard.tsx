@@ -75,19 +75,19 @@ export const ContactCard = ({
 
   // Access toggle
   const [accessDropdown, setAccessDropdown] = useState(false);
-  useEffect(() => {
-    if (
-      !onChangeContactAccessLoading &&
-      !onRemoveConnectionLoadingUnfollow &&
-      !onRemoveConnectionLoadingRevoke
-    ) {
-      setAccessDropdown((prev) => !prev);
-    }
-  }, [
-    onRemoveConnectionLoadingRevoke,
-    onRemoveConnectionLoadingUnfollow,
-    onChangeContactAccessLoading,
-  ]);
+  // useEffect(() => {
+  //   if (
+  //     !onChangeContactAccessLoading &&
+  //     !onRemoveConnectionLoadingUnfollow &&
+  //     !onRemoveConnectionLoadingRevoke
+  //   ) {
+  //     setAccessDropdown((prev) => !prev);
+  //   }
+  // }, [
+  //   onRemoveConnectionLoadingRevoke,
+  //   onRemoveConnectionLoadingUnfollow,
+  //   onChangeContactAccessLoading,
+  // ]);
 
   // Get access
   const [access, setAccess] = useState("public");
@@ -184,6 +184,28 @@ export const ContactCard = ({
     setActiveEdit(false);
   };
 
+  // For dropdown close
+  const handleChangeContactAccess = (
+    contact_id: string,
+    uid: string,
+    type: "contacts" | "friends"
+  ) => {
+    setAccessDropdown((prev) => !prev);
+    onChangeContactAccess(contact_id, uid, type);
+  };
+  const handleRemoveContact = (
+    contact_id: string,
+    uid: string,
+    type: "revoke_access" | "unfollow"
+  ) => {
+    if (type === "revoke_access") {
+      setAccessDropdown((prev) => !prev);
+      onRemoveConnection(contact_id, uid, "revoke_access");
+    } else {
+      onRemoveConnection(contact_id, uid, "unfollow");
+    }
+  };
+
   return (
     <Card style={style}>
       {/* Main */}
@@ -213,6 +235,80 @@ export const ContactCard = ({
           <h1
             style={{ fontSize: "2.8rem", margin: 0 }}
           >{`${localContact.name} ${localContact.surname}`}</h1>
+        </div>
+        {/* Actions */}
+
+        <div className={styles.contactButtonContainer}>
+          {(relationship === "following" || relationship === "none") && (
+            <Button
+              onClick={onSendContactRequest}
+              text={pendingContactRequest ? "Pending" : "Follow"}
+              iconStyle={{ fontSize: "2.6rem" }}
+              icon={<MdGroupAdd />}
+              loading={contactRequestLoading}
+              inactive={pendingContactRequest}
+              innerStyle={{ padding: "0 15px", width: "134px" }}
+            />
+          )}
+          {/* {relationship === "requesting" && (
+            <Button
+              inactive
+              text="Pending"
+              innerStyle={{ padding: "0 15px", width: "134px" }}
+            />
+          )} */}
+          {(relationship === "following" || relationship === "full") && user && (
+            <Dropdown
+              innerButtonStyle={{ padding: "0 15px", width: "118px" }}
+              text="Access"
+              loading={onChangeContactAccessLoading}
+              outsideToggle={accessDropdown}
+              icon={access === "friends" ? <MdOutlineFavorite /> : <MdWork />}
+            >
+              {access === "friends" && (
+                <Button
+                  text="Work"
+                  innerStyle={{ padding: "0 15px" }}
+                  onClick={() =>
+                    handleChangeContactAccess(contact.id, user.id, "contacts")
+                  }
+                  icon={<MdWork />}
+                />
+              )}
+              {access === "contacts" && (
+                <Button
+                  text="Friends"
+                  innerStyle={{ padding: "0 15px" }}
+                  onClick={() =>
+                    handleChangeContactAccess(contact.id, user.id, "friends")
+                  }
+                  icon={<MdOutlineFavorite />}
+                />
+              )}
+              <Button
+                text="Public"
+                innerStyle={{ padding: "0 15px" }}
+                onClick={() =>
+                  onRemoveConnection(user.id, contact.id, "revoke_access")
+                }
+                icon={<MdPublic />}
+                backgroundColor="var(--color-error)"
+                loading={onRemoveConnectionLoadingRevoke}
+              />
+            </Dropdown>
+          )}
+          {(relationship === "follower" || relationship === "full") && user && (
+            <Button
+              text="Unfollow"
+              innerStyle={{ padding: "0 15px" }}
+              onClick={() =>
+                onRemoveConnection(contact.id, user.id, "unfollow")
+              }
+              loading={onRemoveConnectionLoadingUnfollow}
+              icon={<MdGroupOff />}
+              backgroundColor="var(--color-grey)"
+            />
+          )}
         </div>
         {/* Data */}
         <div>
@@ -318,75 +414,6 @@ export const ContactCard = ({
                 onClick={() => router.push(backHref)}
                 icon={<MdArrowBack />}
                 style={{ position: "absolute", top: -20, left: -20 }}
-              />
-            )}
-
-            <div className={styles.contactButtonContainer}>
-              {(relationship === "following" || relationship === "full") &&
-                user && (
-                  <Dropdown
-                    loading={onChangeContactAccessLoading}
-                    outsideToggle={accessDropdown}
-                    icon={
-                      access === "friends" ? <MdOutlineFavorite /> : <MdWork />
-                    }
-                    position="left"
-                  >
-                    <Button
-                      onClick={() =>
-                        onRemoveConnection(user.id, contact.id, "revoke_access")
-                      }
-                      icon={<MdPublic />}
-                      backgroundColor="var(--color-error)"
-                      loading={onRemoveConnectionLoadingRevoke}
-                    />
-                    {access === "friends" && (
-                      <Button
-                        onClick={() =>
-                          onChangeContactAccess(contact.id, user.id, "contacts")
-                        }
-                        icon={<MdWork />}
-                      />
-                    )}
-                    {access === "contacts" && (
-                      <Button
-                        onClick={() =>
-                          onChangeContactAccess(contact.id, user.id, "friends")
-                        }
-                        icon={<MdOutlineFavorite />}
-                      />
-                    )}
-                  </Dropdown>
-                )}
-              {(relationship === "follower" || relationship === "full") &&
-                user && (
-                  <Button
-                    onClick={() =>
-                      onRemoveConnection(contact.id, user.id, "unfollow")
-                    }
-                    loading={onRemoveConnectionLoadingUnfollow}
-                    icon={<MdGroupOff />}
-                    backgroundColor="var(--color-error)"
-                  />
-                )}
-            </div>
-
-            {(relationship === "following" || relationship === "none") && (
-              <Button
-                onClick={onSendContactRequest}
-                text={"Request access"}
-                iconStyle={{ fontSize: "2.6rem" }}
-                style={{ marginTop: "25px" }}
-                icon={<MdGroupAdd />}
-                loading={contactRequestLoading}
-                inactive={pendingContactRequest}
-              />
-            )}
-            {relationship === "requesting" && (
-              <Button
-                style={{ marginTop: "25px" }}
-                inactive
-                text="Request pending"
               />
             )}
           </>
