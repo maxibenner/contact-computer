@@ -27,6 +27,7 @@ import { ProfileContext } from "../../context/ProfileContext";
 export const SingleLineField = ({
   data: { id, owner_id, label, value, access, startEditing },
   onCancel,
+  onSubmitEnd,
   editable,
   type,
   self,
@@ -39,6 +40,7 @@ export const SingleLineField = ({
     id: number | string | null;
     type: "phone" | "email" | "web" | "address";
   }) => void;
+  onSubmitEnd: () => void;
   editable?: boolean;
   type: "phone" | "email" | "web";
   self: boolean;
@@ -84,7 +86,7 @@ export const SingleLineField = ({
     if (startEditing) setEditing(true);
   }, [access, newAccess]);
 
-  // Submit data to parent
+  // Submit data
   const handleSave = async () => {
     setSubmissionLoading(true);
     await saveContactInfo(
@@ -100,6 +102,7 @@ export const SingleLineField = ({
     setEditing(false);
     setSubmissionLoading(false);
     setHasChanged(false);
+    onSubmitEnd();
   };
 
   // Submit delete data to parent

@@ -28,10 +28,9 @@ export const Button = ({
   return (
     <button
       style={{
-        opacity: inactive ? 0.4 : 1,
         ...style,
       }}
-      className={styles.wrapper}
+      className={inactive ? styles.wrapper_inactive : styles.wrapper}
     >
       <div
         onClick={(e) => {
@@ -39,7 +38,7 @@ export const Button = ({
           onClick && onClick();
         }}
         tabIndex={tabindex}
-        className={styles.container}
+        className={inactive ? styles.container_inactive : styles.container}
         style={{
           ...innerStyle,
           background: backgroundColor,

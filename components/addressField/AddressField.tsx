@@ -30,6 +30,7 @@ export const AddressField = ({
     owner_id,
   },
   onCancel,
+  onSubmitEnd,
   editable,
   self,
 }: {
@@ -41,6 +42,7 @@ export const AddressField = ({
     id: number | string | null;
     type: "phone" | "email" | "web" | "address";
   }) => void;
+  onSubmitEnd: () => void;
   editable: boolean;
   self: boolean;
 }) => {
@@ -102,6 +104,7 @@ export const AddressField = ({
     setEditing(false);
     setSubmissionLoading(false);
     setHasChanged(false);
+    onSubmitEnd();
   };
 
   // Submit deletion data to parent

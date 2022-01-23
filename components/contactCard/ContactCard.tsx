@@ -75,19 +75,6 @@ export const ContactCard = ({
 
   // Access toggle
   const [accessDropdown, setAccessDropdown] = useState(false);
-  // useEffect(() => {
-  //   if (
-  //     !onChangeContactAccessLoading &&
-  //     !onRemoveConnectionLoadingUnfollow &&
-  //     !onRemoveConnectionLoadingRevoke
-  //   ) {
-  //     setAccessDropdown((prev) => !prev);
-  //   }
-  // }, [
-  //   onRemoveConnectionLoadingRevoke,
-  //   onRemoveConnectionLoadingUnfollow,
-  //   onChangeContactAccessLoading,
-  // ]);
 
   // Get access
   const [access, setAccess] = useState("public");
@@ -323,6 +310,7 @@ export const ContactCard = ({
                   onCancel={handleCancel}
                   editable={relationship === "self"}
                   self={relationship === "self"}
+                  onSubmitEnd={() => setActiveEdit(false)}
                 />
               ))}
             </>
@@ -338,6 +326,7 @@ export const ContactCard = ({
                   onCancel={handleCancel}
                   editable={relationship === "self"}
                   self={relationship === "self"}
+                  onSubmitEnd={() => setActiveEdit(false)}
                 />
               ))}
             </>
@@ -353,6 +342,7 @@ export const ContactCard = ({
                   onCancel={handleCancel}
                   editable={relationship === "self"}
                   self={relationship === "self"}
+                  onSubmitEnd={() => setActiveEdit(false)}
                 />
               ))}
             </>
@@ -367,6 +357,7 @@ export const ContactCard = ({
                   onCancel={handleCancel}
                   editable={relationship === "self"}
                   self={relationship === "self"}
+                  onSubmitEnd={() => setActiveEdit(false)}
                 />
               ))}
             </>
