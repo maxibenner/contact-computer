@@ -80,6 +80,7 @@ export const ContactCard = ({
   const [access, setAccess] = useState("public");
   useEffect(() => {
     if (contact && user) {
+      console.log(contact)
       for (let i = 0; i < contact.contact.length; i++) {
         if (
           contact.contact[i].contact.id === user.id &&
@@ -173,12 +174,12 @@ export const ContactCard = ({
 
   // For dropdown close
   const handleChangeContactAccess = (
-    contact_id: string,
     uid: string,
+    contact_id: string,
     type: "contacts" | "friends"
   ) => {
     setAccessDropdown((prev) => !prev);
-    onChangeContactAccess(contact_id, uid, type);
+    onChangeContactAccess(uid, contact_id, type);
   };
   const handleRemoveContact = (
     contact_id: string,
@@ -257,7 +258,7 @@ export const ContactCard = ({
                   text="Work"
                   innerStyle={{ padding: "0 15px" }}
                   onClick={() =>
-                    handleChangeContactAccess(contact.id, user.id, "contacts")
+                    handleChangeContactAccess(user.id, contact.id, "contacts")
                   }
                   icon={<MdWork />}
                 />
@@ -267,7 +268,7 @@ export const ContactCard = ({
                   text="Friends"
                   innerStyle={{ padding: "0 15px" }}
                   onClick={() =>
-                    handleChangeContactAccess(contact.id, user.id, "friends")
+                    handleChangeContactAccess(user.id, contact.id, "friends")
                   }
                   icon={<MdOutlineFavorite />}
                 />
@@ -287,7 +288,7 @@ export const ContactCard = ({
           {(relationship === "follower" || relationship === "full") && user && (
             <Button
               text="Unfollow"
-              innerStyle={{ padding: "0 15px" }}
+              innerStyle={{ padding: "0 15px", width: "134px" }}
               onClick={() =>
                 onRemoveConnection(contact.id, user.id, "unfollow")
               }
@@ -366,7 +367,7 @@ export const ContactCard = ({
             localContact.email.length === 0 &&
             localContact.web.length === 0 &&
             localContact.address.length === 0 && (
-              <NoDataPlaceholder text="No Data" />
+              <NoDataPlaceholder style={{ marginTop: "25px" }} text="No Data" />
             )}
         </div>
         {relationship === "self" ? (

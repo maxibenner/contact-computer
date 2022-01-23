@@ -17,6 +17,7 @@ import {
   Request,
 } from "../sdk/db";
 import { AuthContext } from "./AuthContext";
+import { useRouter } from "next/router";
 
 export const ProfileContext = createContext<{
   profile: null | undefined | ContactType;
@@ -42,6 +43,7 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
   // Data
   const user = useContext(AuthContext);
   const [profile, setProfile] = useState<null | undefined | ContactType>();
+  const router = useRouter();
   // const [requests, setRequests] = useState<Request[]>([]);
 
   // Initial data fetching
@@ -53,8 +55,12 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
   const reloadData = async () => {
     if (user) {
       const { data, error } = await db_getContact(user.id);
-      if (data) setProfile(data || null);
-      if (error) console.log(error);
+      if (error) {
+        if (error.message === "Not set up") router.push("setup");
+        else console.log(error);
+      } else {
+        if (data) setProfile(data || null);
+      }
     }
   };
 

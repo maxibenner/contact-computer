@@ -104,8 +104,8 @@ export default function ContactPage() {
     type: "revoke_access" | "unfollow"
   ) => {
     type === "revoke_access"
-      ? setOnChangeContactAccessLoading(true)
-      : setOnChangeContactAccessLoading(true);
+      ? setOnRemoveConnectionLoadingRevoke(true)
+      : setOnRemoveConnectionLoadingUnfollow(true);
 
     await removeConnection(owner_id, contact_id);
 

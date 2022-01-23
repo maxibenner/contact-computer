@@ -20,8 +20,13 @@ export const db_getContact = async (id: string) => {
         .limit(1)
         .single();
 
-      if (error) reject();
-      else resolve(data);
+      if (error) {
+        if (error.code === "406") {
+          reject("Not set up");
+        } else {
+          reject("Problem with profile");
+        }
+      } else resolve(data);
     }
   );
 
@@ -46,61 +51,56 @@ export const db_getContact = async (id: string) => {
       .eq("id", id)
       .single();
 
-    if (error) reject();
-    else resolve(data);
+    if (error) reject("Problem with contacts");
+    else 
+    resolve(data);
   });
 
-  const [profileRes, contactRes] = await Promise.all([
-    profilePromise,
-    contactPromise,
-  ]);
+  return await Promise.all([profilePromise, contactPromise])
+    .then(([profileRes, contactRes]) => {
+      let contactsObj = <{ [key: string]: TransformedConnectionType }>{};
+      let contactsArr = <TransformedConnectionType[]>[];
+      console.log(contactRes)
 
-  let contactsObj = <{ [key: string]: TransformedConnectionType }>{};
-  let contactsArr = <TransformedConnectionType[]>[];
+      // Copy data
+      const follows_contact = contactRes.follows_contact;
+      const contact_follows = contactRes.contact_follows;
 
-  if (contactRes) {
-    // Copy data
-    const follows_contact = contactRes.follows_contact;
-    const contact_follows = contactRes.contact_follows;
-
-    follows_contact.map((follower) => {
-      const key = follower.contact.id;
-      return (contactsObj[key] = <TransformedConnectionType>{
-        contact: follower.contact,
-        access: follower.access,
-        follows_contact: true,
-        contact_follows: false,
+      follows_contact.map((follower) => {
+        const key = follower.contact.id;
+        return (contactsObj[key] = <TransformedConnectionType>{
+          contact: follower.contact,
+          access: follower.access,
+          follows_contact: true,
+          contact_follows: false,
+        });
       });
+
+      contact_follows.forEach((contact) => {
+        const key = contact.owner.id;
+        if (contactsObj[key]) {
+          contactsObj[key] = { ...contactsObj[key], contact_follows: true, access: contact.access };
+        } else {
+          contactsObj[key] = <TransformedConnectionType>{
+            contact: contact.owner,
+            access: contact.access,
+            follows_contact: false,
+            contact_follows: true,
+          };
+        }
+      });
+
+      contactsArr = Object.values<TransformedConnectionType>(contactsObj);
+
+      return {
+        data: { ...profileRes, contact: contactsArr },
+        error: null,
+      };
+    })
+    .catch((err) => {
+      console.log(err);
+      return { data: null, error: { message: "Not set up" } };
     });
-
-    contact_follows.forEach((contact) => {
-      const key = contact.owner.id;
-      if (contactsObj[key]) {
-        contactsObj[key] = { ...contactsObj[key], contact_follows: true };
-      } else {
-        contactsObj[key] = <TransformedConnectionType>{
-          contact: contact.owner,
-          access: contact.access,
-          follows_contact: false,
-          contact_follows: true,
-        };
-      }
-    });
-
-    contactsArr = Object.values<TransformedConnectionType>(contactsObj);
-  }
-
-  return {
-    data: { ...profileRes, contact: contactsArr },
-    error: null,
-  };
-  // })
-  // .catch((err) => {
-  //   return {
-  //     data: null,
-  //     error: err.message,
-  //   };
-  // });
 };
 
 // SAVE
@@ -206,11 +206,14 @@ export const db_changeContactAcccess = async (
   contact_id: string,
   access: Access
 ) => {
+  console.log(access)
   const { data, error } = await supabase
     .from("connection")
     .update([{ access: access }])
     .eq("owner_id", owner_id)
     .eq("contact_id", contact_id);
+
+  console.log(data, error)
 };
 
 /**

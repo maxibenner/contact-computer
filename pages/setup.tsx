@@ -81,7 +81,6 @@ export default function Setup() {
 
       // Error uploading name
       if (nameRes.error) {
-        console.log(nameRes.error);
 
         // Set loading state
         setIsSubmitting(false);
@@ -101,7 +100,7 @@ export default function Setup() {
       }
 
       // Send to profile on success
-      Router.push("/contact-page");
+      Router.push("/profile");
     } else {
       // Missing information
 
