@@ -8,10 +8,8 @@ export const checkRelationship = (
   profile: ContactType | null | undefined,
   contact: ContactType | null | undefined
 ) => {
-  console.log(profile);
-  console.log(contact);
   // Track relationship
-  let relationship: Relationship = null;
+  let relationship: Relationship = "none";
 
   // Start check
   if (profile && contact) {
@@ -25,10 +23,6 @@ export const checkRelationship = (
         if (contact.contact.id === profile.id) {
           // -> Found user in contact's contacts
 
-          if (contact.follows_contact && contact.contact_follows) {
-            relationship = "full";
-          } // -> Connected both ways
-
           if (contact.follows_contact) {
             relationship = "follower";
           } // -> Only follows user
@@ -36,6 +30,10 @@ export const checkRelationship = (
           if (contact.contact_follows) {
             relationship = "following";
           } // -> User only follows
+
+          if (contact.follows_contact && contact.contact_follows) {
+            relationship = "full";
+          } // -> Connected both ways
         } else {
           // -> User not found in contact's contacts
           relationship = "none";

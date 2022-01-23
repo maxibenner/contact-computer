@@ -5,7 +5,6 @@ import { ProfileContext } from "../../context/ProfileContext";
 import { Request, TransformedConnectionType } from "../../sdk/db";
 import { Button } from "../button/Button";
 import styles from "./contactListElement.module.css";
-import { checkRelationship } from "../../utils/checkRelationship";
 import { Relationship } from "../../sdk/db";
 
 export const ContactListElement = ({
@@ -20,24 +19,8 @@ export const ContactListElement = ({
   const { profile, sendContactRequest, reloadData } =
     useContext(ProfileContext);
 
+  // Contact request is loading
   const [requestLoading, setRequestLoading] = useState(false);
-  const [pendingRequest, setPendingRequest] = useState(false);
-  useEffect(() => {
-    checkForPendingRequest();
-    console.log(contact);
-  }, [profile]);
-
-  // Check for pending requests
-  const checkForPendingRequest = () => {
-    if (profile) {
-      for (let i = 0; i < profile.requests_sent.length; i++) {
-        if (profile.requests_sent[i].recipient_id === contact.contact.id) {
-          setPendingRequest(true);
-          break;
-        } else setPendingRequest(false);
-      }
-    }
-  };
 
   const handleSendRequest = async () => {
     setRequestLoading(true);
@@ -47,9 +30,9 @@ export const ContactListElement = ({
   };
 
   // Check for relationship between user and selected contact
-  const [relationship, setRelationship] = useState<Relationship>(null);
+  const [relationship, setRelationship] = useState<Relationship>(undefined);
   useEffect(() => {
-    if (profile) {
+    if (profile && contact) {
       let newRelationship = null;
       if (contact.contact_follows && contact.follows_contact) {
         newRelationship = "full";
@@ -66,11 +49,8 @@ export const ContactListElement = ({
     }
   }, [contact]);
 
-  // const [relationship, setRelationship] = useState(false);
-  // useEffect(() => {
-  //   console.log(data.contact_follows)
-  //   const rs = checkRelationshipWithoutLoop(profile, data);
-  // }, [profile, data]);
+  // Only return if relationship has been set
+  if (!relationship) return null;
 
   // Return prematurely if request is pending in order to not double up contact and request
   for (let i = 0; i < requests.length; i++) {
@@ -95,7 +75,7 @@ export const ContactListElement = ({
         </h3>
       </div>
       <div className={styles.buttonContainer}>
-        {relationship !== "follower" && relationship !== "full" && (
+        {(relationship === "following" || relationship === "requesting") && (
           <Button
             inactive={relationship === "requesting"}
             icon={<MdGroupAdd />}

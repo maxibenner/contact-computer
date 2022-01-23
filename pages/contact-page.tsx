@@ -5,7 +5,7 @@ import { ContactCard } from "../components/contactCard/ContactCard";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/NotificationContext";
 import { ProfileContext } from "../context/ProfileContext";
-import { ContactType, db_getContact, Relationship } from "../sdk/db";
+import { Access, ContactType, db_getContact, Relationship } from "../sdk/db";
 import styles from "../styles/Home.module.css";
 import { checkRelationship } from "../utils/checkRelationship";
 
@@ -19,7 +19,8 @@ export default function ContactPage() {
   const user = useContext(AuthContext);
 
   // User profile
-  const { profile, sendContactRequest } = useContext(ProfileContext);
+  const { profile, sendContactRequest, changeContactAccess, removeConnection } =
+    useContext(ProfileContext);
 
   // Contact
   const [contact, setContact] = useState<ContactType>();
@@ -35,13 +36,13 @@ export default function ContactPage() {
     }
   };
 
-  // TODO
   // Check for relationship between user and selected contact
-  const [relationship, setRelationship] = useState<Relationship>(null);
+  const [relationship, setRelationship] = useState<Relationship>(undefined);
   useEffect(() => {
-    const relationShip = checkRelationship(profile, contact);
-    setRelationship(relationShip);
-    console.log(relationship);
+    if (contact) {
+      const relationShip = checkRelationship(profile, contact);
+      setRelationship(relationShip);
+    }
   }, [contact]);
 
   // Handle contact request
@@ -77,6 +78,45 @@ export default function ContactPage() {
     }
   };
 
+  // Handle change contact access
+  const [onChangeContactAccessLoading, setOnChangeContactAccessLoading] =
+    useState(false);
+  const handleChangeContactAccess = async (
+    owner_id: string,
+    contact_id: string,
+    access: Access
+  ) => {
+    setOnChangeContactAccessLoading(true);
+    await changeContactAccess(owner_id, contact_id, access);
+    setOnChangeContactAccessLoading(false);
+  };
+
+  // Handle change contact access
+  const [onRemoveConnectionLoadingRevoke, setOnRemoveConnectionLoadingRevoke] =
+    useState(false);
+  const [
+    onRemoveConnectionLoadingUnfollow,
+    setOnRemoveConnectionLoadingUnfollow,
+  ] = useState(false);
+  const handleRemoveConnection = async (
+    owner_id: string,
+    contact_id: string,
+    type: "revoke_access" | "unfollow"
+  ) => {
+    type === "revoke_access"
+      ? setOnRemoveConnectionLoadingRevoke(true)
+      : setOnRemoveConnectionLoadingUnfollow(true);
+
+    await removeConnection(owner_id, contact_id);
+
+    type === "revoke_access"
+      ? setOnRemoveConnectionLoadingRevoke(false)
+      : setOnRemoveConnectionLoadingUnfollow(false);
+  };
+
+  // Only return if relationship is defined
+  if (!relationship) return null;
+
   return (
     <div className={styles.container}>
       <Head>
@@ -95,6 +135,13 @@ export default function ContactPage() {
             contactRequestLoading={contactRequestLoading}
             onSendContactRequest={handleSendContactRequest}
             pendingContactRequest={pendingRequest}
+            onChangeContactAccess={handleChangeContactAccess}
+            onChangeContactAccessLoading={onChangeContactAccessLoading}
+            onRemoveConnection={handleRemoveConnection}
+            onRemoveConnectionLoadingRevoke={onRemoveConnectionLoadingRevoke}
+            onRemoveConnectionLoadingUnfollow={
+              onRemoveConnectionLoadingUnfollow
+            }
           />
         )}
       </main>

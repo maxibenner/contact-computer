@@ -2,8 +2,19 @@ import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { CSSProperties, useEffect, useState } from "react";
-import { MdAdd, MdArrowBack, MdGroupAdd, MdOutlineClose } from "react-icons/md";
 import {
+  MdAdd,
+  MdArrowBack,
+  MdGroupAdd,
+  MdOutlineClose,
+  MdDelete,
+  MdWork,
+  MdOutlineFavorite,
+  MdPublic,
+  MdGroupOff,
+} from "react-icons/md";
+import {
+  Access,
   AddressData,
   ContactType,
   DataType,
@@ -28,6 +39,11 @@ export const ContactCard = ({
   onSendContactRequest,
   contactRequestLoading,
   pendingContactRequest,
+  onChangeContactAccess,
+  onChangeContactAccessLoading,
+  onRemoveConnection,
+  onRemoveConnectionLoadingRevoke,
+  onRemoveConnectionLoadingUnfollow,
   user,
 }: {
   contact: ContactType & { contact: TransformedConnectionType[] };
@@ -37,12 +53,56 @@ export const ContactCard = ({
   onSendContactRequest: () => void;
   contactRequestLoading: boolean;
   pendingContactRequest: boolean;
+  onChangeContactAccess: (
+    owner_id: string,
+    contact_id: string,
+    access: Access
+  ) => void;
+  onChangeContactAccessLoading: boolean;
+  onRemoveConnection: (
+    owner_id: string,
+    contact_id: string,
+    type: "unfollow" | "revoke_access"
+  ) => void;
+  onRemoveConnectionLoadingRevoke: boolean;
+  onRemoveConnectionLoadingUnfollow: boolean;
   user: User | null;
 }) => {
   const router = useRouter();
 
   // Toggle add dropdown
   const [dropdownToggle, setDropdownToggle] = useState(false);
+
+  // Access toggle
+  const [accessDropdown, setAccessDropdown] = useState(false);
+  useEffect(() => {
+    if (
+      !onChangeContactAccessLoading &&
+      !onRemoveConnectionLoadingUnfollow &&
+      !onRemoveConnectionLoadingRevoke
+    ) {
+      setAccessDropdown((prev) => !prev);
+    }
+  }, [
+    onRemoveConnectionLoadingRevoke,
+    onRemoveConnectionLoadingUnfollow,
+    onChangeContactAccessLoading,
+  ]);
+
+  // Get access
+  const [access, setAccess] = useState("public");
+  useEffect(() => {
+    if (contact && user) {
+      for (let i = 0; i < contact.contact.length; i++) {
+        if (
+          contact.contact[i].contact.id === user.id &&
+          contact.contact[i].contact_follows
+        ) {
+          setAccess(contact.contact[i].access);
+        }
+      }
+    }
+  }, [contact]);
 
   // Local copy of contact data and keep updated
   const [localContact, setLocalContact] = useState<ContactType>(contact);
@@ -260,7 +320,58 @@ export const ContactCard = ({
                 style={{ position: "absolute", top: -20, left: -20 }}
               />
             )}
-            {relationship !== "follower" && relationship !== "requesting" && (
+
+            <div className={styles.contactButtonContainer}>
+              {(relationship === "following" || relationship === "full") &&
+                user && (
+                  <Dropdown
+                    loading={onChangeContactAccessLoading}
+                    outsideToggle={accessDropdown}
+                    icon={
+                      access === "friends" ? <MdOutlineFavorite /> : <MdWork />
+                    }
+                    position="left"
+                  >
+                    <Button
+                      onClick={() =>
+                        onRemoveConnection(user.id, contact.id, "revoke_access")
+                      }
+                      icon={<MdPublic />}
+                      backgroundColor="var(--color-error)"
+                      loading={onRemoveConnectionLoadingRevoke}
+                    />
+                    {access === "friends" && (
+                      <Button
+                        onClick={() =>
+                          onChangeContactAccess(contact.id, user.id, "contacts")
+                        }
+                        icon={<MdWork />}
+                      />
+                    )}
+                    {access === "contacts" && (
+                      <Button
+                        onClick={() =>
+                          onChangeContactAccess(contact.id, user.id, "friends")
+                        }
+                        icon={<MdOutlineFavorite />}
+                      />
+                    )}
+                  </Dropdown>
+                )}
+              {(relationship === "follower" || relationship === "full") &&
+                user && (
+                  <Button
+                    onClick={() =>
+                      onRemoveConnection(contact.id, user.id, "unfollow")
+                    }
+                    loading={onRemoveConnectionLoadingUnfollow}
+                    icon={<MdGroupOff />}
+                    backgroundColor="var(--color-error)"
+                  />
+                )}
+            </div>
+
+            {(relationship === "following" || relationship === "none") && (
               <Button
                 onClick={onSendContactRequest}
                 text={"Request access"}

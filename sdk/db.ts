@@ -72,7 +72,6 @@ export const db_getContact = async (id: string) => {
         contact_follows: false,
       });
     });
-    console.log(follows_contact);
 
     contact_follows.forEach((contact) => {
       const key = contact.owner.id;
@@ -191,6 +190,52 @@ export const db_declineContactRequest = async (id: number) => {
   return await supabase.from("request").delete().eq("id", id);
 };
 
+/**
+ * Change contact access
+ *
+ * Prerequisites:
+ * - User needs to be authenticated
+ * - User needs to be recipient of request
+ *
+ * @param owner_id - Uid of user
+ * @param contact_id - Uid of contact
+ * @param access - New access type
+ */
+export const db_changeContactAcccess = async (
+  owner_id: string,
+  contact_id: string,
+  access: Access
+) => {
+  const { data, error } = await supabase
+    .from("connection")
+    .update([{ access: access }])
+    .eq("owner_id", owner_id)
+    .eq("contact_id", contact_id);
+};
+
+/**
+ * Remove connection
+ *
+ * Prerequisites:
+ * - User needs to be authenticated
+ * - User needs to be either owner or contact of the connection
+ *
+ * @param owner_id - Uid of user
+ * @param contact_id - Uid of contact
+ * @param access - New access type
+ */
+export const db_removeConnection = async (
+  owner_id: string,
+  contact_id: string
+) => {
+  const { data, error } = await supabase
+    .from("connection")
+    .delete()
+    .eq("owner_id", owner_id)
+    .eq("contact_id", contact_id);
+  console.log(error);
+};
+
 /* __________________TYPES__________________ */
 export type ContactType = {
   id: string;
@@ -268,4 +313,4 @@ export type Relationship =
   | "requesting"
   | "none"
   | "self"
-  | null;
+  | undefined;

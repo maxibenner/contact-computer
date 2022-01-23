@@ -10,6 +10,8 @@ import {
   db_getContact,
   db_saveContactInfo,
   db_sendContactRequest,
+  db_changeContactAcccess,
+  db_removeConnection,
   ContactType,
   SingleLineData,
   Request,
@@ -27,6 +29,12 @@ export const ProfileContext = createContext<{
     type: DataType
   ) => Promise<void>;
   deleteContactInfo: (data_id: number, type: DataType) => Promise<void>;
+  changeContactAccess: (
+    owner_id: string,
+    contact_id: string,
+    access: Access
+  ) => Promise<void>;
+  removeConnection: (owner_id: string, contact_id: string) => Promise<void>;
   reloadData: () => Promise<void>;
 }>(undefined as any);
 
@@ -83,10 +91,22 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
   const sendContactRequest = async (recipient_id: string) => {
     if (user) {
       await db_sendContactRequest(user.id, recipient_id);
-      console.log("1. Sent request")
+      console.log("1. Sent request");
       await reloadData();
-      console.log("2. Reloaded Data")
+      console.log("2. Reloaded Data");
     }
+  };
+  const changeContactAccess = async (
+    owner_id: string,
+    contact_id: string,
+    access: Access
+  ) => {
+    await db_changeContactAcccess(owner_id, contact_id, access);
+    await reloadData();
+  };
+  const removeConnection = async (owner_id: string, contact_id: string) => {
+    await db_removeConnection(owner_id, contact_id);
+    await reloadData();
   };
 
   return (
@@ -99,6 +119,8 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
         saveContactInfo,
         deleteContactInfo,
         sendContactRequest,
+        changeContactAccess,
+        removeConnection,
         reloadData,
       }}
     >
