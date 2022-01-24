@@ -16,6 +16,7 @@ import { Dropdown } from "../dropdown/Dropdown";
 import { Spinner } from "../spinner/Spinner";
 import { ProfileContext } from "../../context/ProfileContext";
 
+
 /**
  * An element displaying user data
  * @param label The name of the data point
