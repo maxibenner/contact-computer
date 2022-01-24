@@ -7,7 +7,7 @@ export const MobileMenu = ({ children }: { children: ReactNode }) => {
   const [isActive, setIsActive] = useState(false);
   return (
     <>
-      <div className={styles.wrapper_mobile}>
+      <div className={styles.wrapper_mobile} onClick={() => setIsActive(false)}>
         <Button
           style={{ height: "50px", width: "50px" }}
           icon={isActive ? <MdMenuOpen /> : <MdMenu />}
