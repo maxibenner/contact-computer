@@ -62,13 +62,16 @@ export default function Setup() {
       setIsSubmitting(true);
 
       // Upload image
-      const imageRes = await supabase.storage
+      const imageRes = (await supabase.storage
         .from("public")
-        .upload(`${user.id}/profile_image`, image);
+        .upload(`${user.id}/profile_image`, image)) as {
+        data: {
+          Key: string;
+        } | null;
+        error: (Error & { statusCode: string }) | null;
+      };
 
-      if (imageRes.error) {
-        console.log(imageRes.error);
-
+      if (imageRes.error && imageRes.error.statusCode !== "23505") {
         // Set loading state
         setIsSubmitting(false);
 
@@ -82,8 +85,15 @@ export default function Setup() {
         });
       }
 
+      if (imageRes.error && imageRes.error.statusCode !== "23505") {
+        // Update image
+        const imageRes = await supabase.storage
+          .from("public")
+          .update(`${user.id}/profile_image`, image);
+      }
+
       // Submit name
-      const projectId = "oedndnouvlbxuwkvdynh";
+      const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
       const userId = user.id;
       const nameRes = await supabase.from("profile").insert({
         id: user.id,

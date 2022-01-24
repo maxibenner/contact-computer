@@ -26,7 +26,7 @@ export default function ContactPage() {
   const [contact, setContact] = useState<ContactType>();
   useEffect(() => {
     loadContact();
-  }, [profile]);
+  }, [profile, router]);
 
   const loadContact = async () => {
     const queryId = router.query.u;
