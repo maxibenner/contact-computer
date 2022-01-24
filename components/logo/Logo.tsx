@@ -18,7 +18,7 @@ export const Logo = () => {
   }, [mousePos]);
 
   return (
-    <div className={styles.container} /*onMouseMove={() => console.log("test")}*/>
+    <div className={styles.container}>
       <div
         className={styles.eye}
         style={{ marginTop: "-5px", marginRight: "-5px", zIndex: 2 }}

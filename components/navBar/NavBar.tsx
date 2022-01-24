@@ -8,11 +8,9 @@ import { Button } from "../button/Button";
 import { AuthContext } from "../../context/AuthContext";
 import { signOut } from "../../sdk/auth";
 import { ProfileContext } from "../../context/ProfileContext";
-import { useRouter } from "next/router";
-import { useState } from "react";
+import { MobileMenu } from "../mobileMenu/MobileMenu";
 
 export const NavBar = () => {
-  const router = useRouter();
   const [notification, setNotification] = useContext(NotificationContext);
   const { profile } = useContext(ProfileContext);
   const user = useContext(AuthContext);
@@ -28,7 +26,7 @@ export const NavBar = () => {
       </Link>
       <div className={styles.navMenu}>
         {user ? (
-          <>
+          <MobileMenu>
             <Link href="/">
               <p>Search</p>
             </Link>
@@ -55,9 +53,9 @@ export const NavBar = () => {
               innerStyle={{ padding: "0 25px" }}
               text="Logout"
             />
-          </>
+          </MobileMenu>
         ) : (
-          <>
+          <MobileMenu>
             <Link href="/signin">
               <p>Sign In</p>
             </Link>
@@ -71,7 +69,7 @@ export const NavBar = () => {
                 />
               </a>
             </Link>
-          </>
+          </MobileMenu>
         )}
       </div>
 

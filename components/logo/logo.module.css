@@ -25,3 +25,8 @@
   left: 8px;
   top: 7px;
 }
+@media (max-width: 350px) {
+  .title {
+    display: none;
+  }
+}
