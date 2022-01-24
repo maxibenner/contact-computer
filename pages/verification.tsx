@@ -31,11 +31,11 @@ const Verification: NextPage = () => {
           </p>
           <p className={textStyles.bodyLight}>
             Just click the link in the email to start editing your profile and
-            adding contacts. If you don't see it, you may need to{" "}
+            adding contacts. If you don&apos;t see it, you may need to{" "}
             <b className={textStyles.bodyRegular}>check your spam folder</b>.
           </p>
           <p className={textStyles.bodyLight} style={{ marginTop: "25px" }}>
-            Still can't find it?
+            Still can&apos;t find it?
           </p>
           <Link href="mailto:benner@fotura.co">
             <a>
