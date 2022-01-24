@@ -6,7 +6,7 @@ export const NoDataPlaceholder = ({
   style,
 }: {
   text: string;
-  style: CSSProperties;
+  style?: CSSProperties;
 }) => {
   return (
     <div className={styles.noDataContainer} style={style}>
