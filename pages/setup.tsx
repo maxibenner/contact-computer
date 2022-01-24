@@ -4,8 +4,9 @@ import { InitialSetupCard } from "../components/initialSetupCard/InitialSetupCar
 import { supabase } from "../sdk/supabase";
 import styles from "../styles/Home.module.css";
 import { NotificationContext } from "../context/NotificationContext";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { AuthContext } from "../context/AuthContext";
+import { ProfileContext } from "../context/ProfileContext";
 
 /**
  * A form to submit the initial user information
@@ -16,6 +17,7 @@ export default function Setup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const user = useContext(AuthContext);
+  const { reloadData } = useContext(ProfileContext);
 
   // Introduction
   useEffect(() => {
@@ -43,6 +45,17 @@ export default function Setup() {
     surname: string;
     image: File | null;
   }) => {
+    // Make sure user is logged in
+
+    if (!user)
+      return setNotification({
+        title: "Error",
+        description:
+          "It looks like you are not logged in. Please sign in and try again.",
+        type: "error",
+        buttonText: "Ok",
+      });
+
     // Check if information is complete
     if (name && surname && image && user) {
       // Set loading state
@@ -69,7 +82,7 @@ export default function Setup() {
         });
       }
 
-      // Upload name
+      // Submit name
       const projectId = "oedndnouvlbxuwkvdynh";
       const userId = user.id;
       const nameRes = await supabase.from("profile").insert({
@@ -79,9 +92,11 @@ export default function Setup() {
         img_src: `https://${projectId}.supabase.in/storage/v1/object/public/public/${userId}/profile_image`,
       });
 
+      // Reload context
+      await reloadData();
+
       // Error uploading name
       if (nameRes.error) {
-
         // Set loading state
         setIsSubmitting(false);
 
@@ -93,7 +108,7 @@ export default function Setup() {
         return setNotification({
           title: "Error",
           description:
-            "I wasn't able to upload your name. Please reload this page and try again.",
+            "I wasn't able to submit your name. Please reload this page and try again.",
           type: "error",
           buttonText: "Ok",
         });

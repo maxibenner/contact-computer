@@ -125,7 +125,7 @@ export default function ContactPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        {contact && profile && (
+        {contact && (
           <ContactCard
             style={{ margin: "10vh 35px 70px 35px" }}
             backHref={typeof router.query.o === "string" ? router.query.o : "/"}

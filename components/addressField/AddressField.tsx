@@ -247,11 +247,13 @@ export const AddressField = ({
               : "rotate(-45deg)",
           }}
         />
-        <Button
-          onClick={handleDelete}
-          icon={deletionLoading ? <Spinner small /> : <MdDelete />}
-          backgroundColor={"var(--color-error)"}
-        />
+        {typeof id !== "string" && (
+          <Button
+            onClick={handleDelete}
+            icon={deletionLoading ? <Spinner small /> : <MdDelete />}
+            backgroundColor={"var(--color-error)"}
+          />
+        )}
       </div>
     </div>
   ) : (

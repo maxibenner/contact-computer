@@ -44,7 +44,6 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
   const user = useContext(AuthContext);
   const [profile, setProfile] = useState<null | undefined | ContactType>();
   const router = useRouter();
-  // const [requests, setRequests] = useState<Request[]>([]);
 
   // Initial data fetching
   useEffect(() => {

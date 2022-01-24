@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ContactCard } from "../components/contactCard/ContactCard";
 import { AuthContext } from "../context/AuthContext";
 import { ProfileContext } from "../context/ProfileContext";
@@ -27,7 +27,7 @@ export default function Profile() {
             style={{ margin: "10vh 35px 70px 35px" }}
             backHref={typeof router.query.o === "string" ? router.query.o : "/"}
             contact={profile}
-            user={user ? user : null}
+            user={user}
           />
         )}
       </main>

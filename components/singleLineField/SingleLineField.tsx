@@ -221,11 +221,13 @@ export const SingleLineField = ({
               : "rotate(-45deg)",
           }}
         />
-        <Button
-          onClick={handlDelete}
-          icon={deletionLoading ? <Spinner small /> : <MdDelete />}
-          backgroundColor={"var(--color-error)"}
-        />
+        {typeof id !== "string" && (
+          <Button
+            onClick={handlDelete}
+            icon={deletionLoading ? <Spinner small /> : <MdDelete />}
+            backgroundColor={"var(--color-error)"}
+          />
+        )}
       </div>
     </div>
   ) : (

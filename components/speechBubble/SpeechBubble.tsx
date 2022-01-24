@@ -14,7 +14,7 @@ export const SpeechBubble = ({
   buttonText?: string | undefined;
   onClick?: () => void | undefined;
 }) => {
-  /*if (description) {
+  if (description) {
     return (
       <div
         className={type === "error" ? styles.containerError : styles.container}
@@ -36,5 +36,5 @@ export const SpeechBubble = ({
         )}
       </div>
     );
-  } else */return null;
+  } else return null;
 };

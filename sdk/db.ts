@@ -22,8 +22,10 @@ export const db_getContact = async (id: string) => {
 
       if (error) {
         if (error.code === "406") {
+          console.log(error)
           reject("Not set up");
         } else {
+          console.log(error)
           reject("Problem with profile");
         }
       } else resolve(data);
@@ -60,7 +62,6 @@ export const db_getContact = async (id: string) => {
     .then(([profileRes, contactRes]) => {
       let contactsObj = <{ [key: string]: TransformedConnectionType }>{};
       let contactsArr = <TransformedConnectionType[]>[];
-      console.log(contactRes)
 
       // Copy data
       const follows_contact = contactRes.follows_contact;

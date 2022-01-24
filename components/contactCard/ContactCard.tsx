@@ -7,7 +7,6 @@ import {
   MdArrowBack,
   MdGroupAdd,
   MdOutlineClose,
-  MdDelete,
   MdWork,
   MdOutlineFavorite,
   MdPublic,
@@ -50,23 +49,23 @@ export const ContactCard = ({
   style?: CSSProperties;
   backHref: string;
   relationship: Relationship;
-  onSendContactRequest: () => void;
-  contactRequestLoading: boolean;
-  pendingContactRequest: boolean;
-  onChangeContactAccess: (
+  onSendContactRequest?: () => void;
+  contactRequestLoading?: boolean;
+  pendingContactRequest?: boolean;
+  onChangeContactAccess?: (
     owner_id: string,
     contact_id: string,
     access: Access
   ) => void;
-  onChangeContactAccessLoading: boolean;
-  onRemoveConnection: (
+  onChangeContactAccessLoading?: boolean;
+  onRemoveConnection?: (
     owner_id: string,
     contact_id: string,
     type: "unfollow" | "revoke_access"
   ) => void;
-  onRemoveConnectionLoadingRevoke: boolean;
-  onRemoveConnectionLoadingUnfollow: boolean;
-  user: User | null;
+  onRemoveConnectionLoadingRevoke?: boolean;
+  onRemoveConnectionLoadingUnfollow?: boolean;
+  user?: User | null;
 }) => {
   const router = useRouter();
 
@@ -80,7 +79,7 @@ export const ContactCard = ({
   const [access, setAccess] = useState("public");
   useEffect(() => {
     if (contact && user) {
-      console.log(contact)
+      console.log(contact);
       for (let i = 0; i < contact.contact.length; i++) {
         if (
           contact.contact[i].contact.id === user.id &&
@@ -104,6 +103,7 @@ export const ContactCard = ({
 
   // Add new field to local data copy
   const handleAddData = (type: DataType) => {
+    console.log(user)
     if (user) {
       // Set to active editing
       setActiveEdit(true);
@@ -178,19 +178,23 @@ export const ContactCard = ({
     contact_id: string,
     type: "contacts" | "friends"
   ) => {
-    setAccessDropdown((prev) => !prev);
-    onChangeContactAccess(uid, contact_id, type);
+    if (onChangeContactAccess) {
+      setAccessDropdown((prev) => !prev);
+      onChangeContactAccess(uid, contact_id, type);
+    }
   };
   const handleRemoveContact = (
     contact_id: string,
     uid: string,
     type: "revoke_access" | "unfollow"
   ) => {
-    if (type === "revoke_access") {
-      setAccessDropdown((prev) => !prev);
-      onRemoveConnection(contact_id, uid, "revoke_access");
-    } else {
-      onRemoveConnection(contact_id, uid, "unfollow");
+    if (onRemoveConnection) {
+      if (type === "revoke_access") {
+        setAccessDropdown((prev) => !prev);
+        onRemoveConnection(contact_id, uid, "revoke_access");
+      } else {
+        onRemoveConnection(contact_id, uid, "unfollow");
+      }
     }
   };
 
@@ -238,13 +242,6 @@ export const ContactCard = ({
               innerStyle={{ padding: "0 15px", width: "134px" }}
             />
           )}
-          {/* {relationship === "requesting" && (
-            <Button
-              inactive
-              text="Pending"
-              innerStyle={{ padding: "0 15px", width: "134px" }}
-            />
-          )} */}
           {(relationship === "following" || relationship === "full") && user && (
             <Dropdown
               innerButtonStyle={{ padding: "0 15px", width: "118px" }}
@@ -277,7 +274,7 @@ export const ContactCard = ({
                 text="Public"
                 innerStyle={{ padding: "0 15px" }}
                 onClick={() =>
-                  onRemoveConnection(user.id, contact.id, "revoke_access")
+                  handleRemoveContact(user.id, contact.id, "revoke_access")
                 }
                 icon={<MdPublic />}
                 backgroundColor="var(--color-error)"
@@ -290,7 +287,7 @@ export const ContactCard = ({
               text="Unfollow"
               innerStyle={{ padding: "0 15px", width: "134px" }}
               onClick={() =>
-                onRemoveConnection(contact.id, user.id, "unfollow")
+                handleRemoveContact(contact.id, user.id, "unfollow")
               }
               loading={onRemoveConnectionLoadingUnfollow}
               icon={<MdGroupOff />}
