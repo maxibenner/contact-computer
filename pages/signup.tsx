@@ -22,7 +22,7 @@ const SignUp: NextPage = () => {
     e.preventDefault();
     setItsLoading(true);
 
-    signUp(email, password, "http://localhost:3000/setup").then(
+    signUp(email, password, `${process.env.NEXT_PUBLIC_DOMAIN}/setup`).then(
       ({ error, session, user }) => {
         if (error) {
           setItsLoading(false);
