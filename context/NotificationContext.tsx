@@ -9,7 +9,7 @@ export type Notification = {
 };
 
 export const NotificationContext = createContext<
-  [Notification | null, (data: Notification) => void]
+  [Notification | null, (data: Notification | null) => void]
 >([] as any);
 
 export const NotificationWrapper = ({
