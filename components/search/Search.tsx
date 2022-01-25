@@ -4,31 +4,22 @@ import { MdSearch } from "react-icons/md";
 import React, { useState } from "react";
 
 export const Search = ({
-  onChange,
   onSearch,
   style,
 }: {
-  onChange?: Function;
   onSearch?: Function;
   style?: React.CSSProperties;
 }) => {
   const [value, setValue] = useState<string>();
   const handleChange = (t: string) => {
     setValue(t);
-    onChange && onChange(t);
-
-    // Search after every input change (only after more than 5 characters)
-    if (value && value.length > 5) {
-      console.log("Searching after every input change");
-      handleSearch();
-    }
+    onSearch && onSearch(t);
   };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch && onSearch(value);
-  };
-  const handleSearch = () => {
-    onSearch && onSearch(value);
+    console.log(value);
   };
 
   return (
@@ -39,7 +30,6 @@ export const Search = ({
         onChange={(e) => handleChange(e.target.value)}
       />
       <Button
-        onClick={handleSearch}
         icon={<MdSearch />}
         style={{
           position: "absolute",

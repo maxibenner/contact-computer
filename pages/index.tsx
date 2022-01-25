@@ -18,11 +18,13 @@ const Home: NextPage = () => {
   const [notification, setNotification] = useContext(NotificationContext);
 
   const handleSearch = async (d: string) => {
-    const { data, error } = await db_getContactSearchResult(d);
-    if (error) {
-      console.log(error);
+    if (d.length > 3) {
+      const { data, error } = await db_getContactSearchResult(d);
+      if (error) {
+        console.log(error);
+      }
+      setContacts(data);
     }
-    setContacts(data);
   };
 
   const handleSelect = (contact: ContactType) => {
