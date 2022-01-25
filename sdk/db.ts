@@ -1,6 +1,8 @@
+import { makeId } from "../utils/makeId";
 import { supabase } from "./supabase";
 
 export const db_getContactSearchResult = async (query: string) => {
+  console.log(query);
   return await supabase.rpc("get_contacts_by_name", {
     query: query,
   });
@@ -22,10 +24,10 @@ export const db_getContact = async (id: string) => {
 
       if (error) {
         if (error.code === "406") {
-          console.log(error)
+          console.log(error);
           reject("Not set up");
         } else {
-          console.log(error)
+          console.log(error);
           reject("Problem with profile");
         }
       } else resolve(data);
@@ -54,8 +56,7 @@ export const db_getContact = async (id: string) => {
       .single();
 
     if (error) reject("Problem with contacts");
-    else 
-    resolve(data);
+    else resolve(data);
   });
 
   return await Promise.all([profilePromise, contactPromise])
@@ -80,7 +81,11 @@ export const db_getContact = async (id: string) => {
       contact_follows.forEach((contact) => {
         const key = contact.owner.id;
         if (contactsObj[key]) {
-          contactsObj[key] = { ...contactsObj[key], contact_follows: true, access: contact.access };
+          contactsObj[key] = {
+            ...contactsObj[key],
+            contact_follows: true,
+            access: contact.access,
+          };
         } else {
           contactsObj[key] = <TransformedConnectionType>{
             contact: contact.owner,
@@ -207,14 +212,14 @@ export const db_changeContactAcccess = async (
   contact_id: string,
   access: Access
 ) => {
-  console.log(access)
+  console.log(access);
   const { data, error } = await supabase
     .from("connection")
     .update([{ access: access }])
     .eq("owner_id", owner_id)
     .eq("contact_id", contact_id);
 
-  console.log(data, error)
+  console.log(data, error);
 };
 
 /**
@@ -238,6 +243,70 @@ export const db_removeConnection = async (
     .eq("owner_id", owner_id)
     .eq("contact_id", contact_id);
   console.log(error);
+};
+
+/**
+ * Update profile image
+ *
+ * Prerequisites:
+ * - User needs to be authenticated
+ *
+ * @param uid - Id of uploading user
+ * @param image - The image file to be uploaded
+ */
+export const db_updateProfileImage = async (uid: string, image: File) => {
+  const profileRes = await supabase
+    .from("profile")
+    .select("img_src")
+    .eq("id", uid)
+    .limit(1)
+    .single();
+
+  if (profileRes.error && !profileRes.data) {
+    console.log(profileRes.error);
+    return { data: null, error: { message: "Problem reading user profile" } };
+  }
+
+  const deleteRes = await supabase.storage
+    .from("public")
+    .remove([profileRes.data.img_src]);
+
+  if (deleteRes.error && !deleteRes.data) {
+    console.log(deleteRes.error);
+    return {
+      data: null,
+      error: { message: "Problem deleting old profile image" },
+    };
+  }
+
+  const fingerprint = makeId(6);
+  const path = `${uid}/profile_image_${fingerprint}`;
+  const uploadRes = await supabase.storage.from("public").upload(path, image);
+
+  if (uploadRes.error) {
+    console.log(uploadRes.error);
+    return {
+      data: null,
+      error: { message: "Problem uploading new profile image" },
+    };
+  }
+
+  const newImgPath = `https://${process.env.NEXT_PUBLIC_PROJECT_ID}.supabase.in/storage/v1/object/public/public/${uid}/profile_image_${fingerprint}`;
+  const updateRes = await supabase
+    .from("profile")
+    .update({ img_src: newImgPath })
+    .eq("id", uid)
+    .limit(1)
+    .single();
+
+  if (updateRes.error) {
+    console.log(updateRes.error);
+    return {
+      data: null,
+      error: { message: "Problem update profile" },
+    };
+  }
+  return { data: updateRes.data, error: null };
 };
 
 /* __________________TYPES__________________ */

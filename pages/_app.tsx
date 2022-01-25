@@ -10,16 +10,16 @@ import { ProfileWrapper } from "../context/ProfileContext";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <AuthWrapper>
-      <ProfileWrapper>
-        <MouseWrapper>
-          <NotificationWrapper>
+      <NotificationWrapper>
+        <ProfileWrapper>
+          <MouseWrapper>
             <Wrapper>
               <Component {...pageProps} />
               {/* <_dev_tools_ /> */}
             </Wrapper>
-          </NotificationWrapper>
-        </MouseWrapper>
-      </ProfileWrapper>
+          </MouseWrapper>
+        </ProfileWrapper>
+      </NotificationWrapper>
     </AuthWrapper>
   );
 }

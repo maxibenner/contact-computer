@@ -1,7 +1,15 @@
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { CSSProperties, useEffect, useState } from "react";
+import { supabase } from "../../sdk/supabase";
+import {
+  CSSProperties,
+  useEffect,
+  useState,
+  useRef,
+  ChangeEvent,
+  useContext,
+} from "react";
 import {
   MdAdd,
   MdArrowBack,
@@ -29,6 +37,7 @@ import { NoDataPlaceholder } from "../noDataPlaceholder/NoDataPlaceholder";
 import { SingleLineField } from "../singleLineField/SingleLineField";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./contactCard.module.css";
+import { ProfileContext } from "../../context/ProfileContext";
 
 export const ContactCard = ({
   contact,
@@ -75,11 +84,16 @@ export const ContactCard = ({
   // Access toggle
   const [accessDropdown, setAccessDropdown] = useState(false);
 
+  // Context for profile image change
+  const imgInputRef = useRef<HTMLInputElement>();
+
+  // Profile context
+  const { updateProfileImage } = useContext(ProfileContext);
+
   // Get access
   const [access, setAccess] = useState("public");
   useEffect(() => {
     if (contact && user) {
-      console.log(contact);
       for (let i = 0; i < contact.contact.length; i++) {
         if (
           contact.contact[i].contact.id === user.id &&
@@ -103,7 +117,7 @@ export const ContactCard = ({
 
   // Add new field to local data copy
   const handleAddData = (type: DataType) => {
-    console.log(user)
+    console.log(user);
     if (user) {
       // Set to active editing
       setActiveEdit(true);
@@ -198,12 +212,32 @@ export const ContactCard = ({
     }
   };
 
+  const handleChangeImage = () => {
+    imgInputRef.current?.click();
+  };
+
+  const [isUpdating, setIsUpdating] = useState(false);
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files) {
+      // Show loading spinner
+      setIsUpdating(true);
+
+      // Update image
+      await updateProfileImage(e.target.files[0]);
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <Card style={style}>
       {/* Main */}
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", marginBottom: "25px" }}>
-          <div className={styles.imageContainer}>
+          <div
+            className={styles.imageContainer}
+            onClick={() => handleChangeImage()}
+          >
             <div
               style={{
                 opacity: isProfileImage ? 1 : 0,
@@ -220,7 +254,17 @@ export const ContactCard = ({
                 src={localContact.img_src}
               />
             </div>
+            {/*Loading*/}
             <div style={{ display: isProfileImage ? "none" : "unset" }}>
+              <Spinner />
+            </div>
+            {/*Updating*/}
+            <div
+              style={{
+                display: isUpdating ? "unset" : "none",
+                position: "absolute",
+              }}
+            >
               <Spinner />
             </div>
           </div>
@@ -408,6 +452,12 @@ export const ContactCard = ({
           </>
         )}
       </div>
+      <input
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+        ref={imgInputRef as any}
+        type="file"
+      />
     </Card>
   );
 };
