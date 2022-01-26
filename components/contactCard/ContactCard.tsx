@@ -1,25 +1,25 @@
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { supabase } from "../../sdk/supabase";
 import {
-  ChangeEvent,
   CSSProperties,
-  useContext,
   useEffect,
-  useRef,
   useState,
+  useRef,
+  ChangeEvent,
+  useContext,
 } from "react";
 import {
   MdAdd,
   MdArrowBack,
-  MdBusiness,
   MdGroupAdd,
-  MdGroupOff,
   MdOutlineClose,
+  MdWork,
   MdOutlineFavorite,
   MdPublic,
+  MdGroupOff,
 } from "react-icons/md";
-import { ProfileContext } from "../../context/ProfileContext";
 import {
   Access,
   AddressData,
@@ -37,6 +37,7 @@ import { NoDataPlaceholder } from "../noDataPlaceholder/NoDataPlaceholder";
 import { SingleLineField } from "../singleLineField/SingleLineField";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./contactCard.module.css";
+import { ProfileContext } from "../../context/ProfileContext";
 
 export const ContactCard = ({
   contact,
@@ -106,7 +107,7 @@ export const ContactCard = ({
 
   // Local copy of contact data and keep updated
   const [localContact, setLocalContact] = useState<ContactType>(contact);
-  // useEffect(() => setLocalContact(contact), [contact]);
+  useEffect(() => setLocalContact(contact), [contact]);
 
   // Track if a field is currently being edited
   const [activeEdit, setActiveEdit] = useState(false);
@@ -116,6 +117,7 @@ export const ContactCard = ({
 
   // Add new field to local data copy
   const handleAddData = (type: DataType) => {
+    console.log(user);
     if (user) {
       // Set to active editing
       setActiveEdit(true);
@@ -125,36 +127,46 @@ export const ContactCard = ({
 
       // Create arbitrary id to facilitate cancel operation
       const randomId = (Math.random() * 99999999).toFixed(0) + "_local";
+      console.log(randomId);
 
-      // Push appropriate data
+      // Push cappropriate data
       if (type === "address") {
-        contactCopy.address.push({
-          id: randomId,
-          label: "",
-          access: "public",
-          street: "",
-          city: "",
-          state: "",
-          postal: "",
-          country: "",
-          startEditing: true,
-          owner_id: user.id,
-        } as AddressData & { startEditing: boolean });
-      } else
-        contactCopy[type].push({
-          id: randomId,
-          label: "",
-          value: "",
-          access: "public",
-          startEditing: true,
-          owner_id: user.id,
-        } as SingleLineData & { startEditing: boolean });
-
+        setLocalContact({
+          ...localContact,
+          [type]: [
+            ...localContact[type],
+            {
+              id: randomId,
+              label: "",
+              access: "public",
+              street: "",
+              city: "",
+              state: "",
+              postal: "",
+              country: "",
+              startEditing: true,
+              owner_id: user.id,
+            } as AddressData & { startEditing: boolean },
+          ],
+        });
+      } else {
+        setLocalContact({
+          ...localContact,
+          [type]: [
+            ...localContact[type],
+            {
+              id: randomId,
+              label: "",
+              value: "",
+              access: "public",
+              startEditing: true,
+              owner_id: user.id,
+            },
+          ],
+        });
+      }
       // Close add field dropdown
       setDropdownToggle((prev) => !prev);
-
-      // Update local data copy
-      setLocalContact(contactCopy);
     }
   };
 
@@ -289,9 +301,7 @@ export const ContactCard = ({
               text="Access"
               loading={onChangeContactAccessLoading}
               outsideToggle={accessDropdown}
-              icon={
-                access === "friends" ? <MdOutlineFavorite /> : <MdBusiness />
-              }
+              icon={access === "friends" ? <MdOutlineFavorite /> : <MdWork />}
             >
               {access === "friends" && (
                 <Button
@@ -300,7 +310,7 @@ export const ContactCard = ({
                   onClick={() =>
                     handleChangeContactAccess(user.id, contact.id, "contacts")
                   }
-                  icon={<MdBusiness />}
+                  icon={<MdWork />}
                 />
               )}
               {access === "contacts" && (
