@@ -1,25 +1,25 @@
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { supabase } from "../../sdk/supabase";
 import {
-  CSSProperties,
-  useEffect,
-  useState,
-  useRef,
   ChangeEvent,
+  CSSProperties,
   useContext,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
 import {
   MdAdd,
   MdArrowBack,
+  MdBusiness,
   MdGroupAdd,
+  MdGroupOff,
   MdOutlineClose,
-  MdWork,
   MdOutlineFavorite,
   MdPublic,
-  MdGroupOff,
 } from "react-icons/md";
+import { ProfileContext } from "../../context/ProfileContext";
 import {
   Access,
   AddressData,
@@ -37,7 +37,6 @@ import { NoDataPlaceholder } from "../noDataPlaceholder/NoDataPlaceholder";
 import { SingleLineField } from "../singleLineField/SingleLineField";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./contactCard.module.css";
-import { ProfileContext } from "../../context/ProfileContext";
 
 export const ContactCard = ({
   contact,
@@ -107,7 +106,7 @@ export const ContactCard = ({
 
   // Local copy of contact data and keep updated
   const [localContact, setLocalContact] = useState<ContactType>(contact);
-  useEffect(() => setLocalContact(contact), [contact]);
+  // useEffect(() => setLocalContact(contact), [contact]);
 
   // Track if a field is currently being edited
   const [activeEdit, setActiveEdit] = useState(false);
@@ -117,7 +116,6 @@ export const ContactCard = ({
 
   // Add new field to local data copy
   const handleAddData = (type: DataType) => {
-    console.log(user);
     if (user) {
       // Set to active editing
       setActiveEdit(true);
@@ -127,9 +125,8 @@ export const ContactCard = ({
 
       // Create arbitrary id to facilitate cancel operation
       const randomId = (Math.random() * 99999999).toFixed(0) + "_local";
-      console.log(randomId);
 
-      // Push cappropriate data
+      // Push appropriate data
       if (type === "address") {
         contactCopy.address.push({
           id: randomId,
@@ -292,7 +289,9 @@ export const ContactCard = ({
               text="Access"
               loading={onChangeContactAccessLoading}
               outsideToggle={accessDropdown}
-              icon={access === "friends" ? <MdOutlineFavorite /> : <MdWork />}
+              icon={
+                access === "friends" ? <MdOutlineFavorite /> : <MdBusiness />
+              }
             >
               {access === "friends" && (
                 <Button
@@ -301,7 +300,7 @@ export const ContactCard = ({
                   onClick={() =>
                     handleChangeContactAccess(user.id, contact.id, "contacts")
                   }
-                  icon={<MdWork />}
+                  icon={<MdBusiness />}
                 />
               )}
               {access === "contacts" && (

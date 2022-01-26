@@ -4,7 +4,7 @@ import {
   MdCheck,
   MdOutlineClose,
   MdOutlineFavorite,
-  MdWork,
+  MdBusiness,
 } from "react-icons/md";
 import { ProfileContext } from "../../context/ProfileContext";
 import { Access, Request } from "../../sdk/db";
@@ -59,7 +59,7 @@ export const RequestListElement = ({ data }: { data: Request }) => {
             icon={<MdOutlineFavorite />}
             onClick={() => handleAccept("friends")}
           />
-          <Button icon={<MdWork />} onClick={() => handleAccept("contacts")} />
+          <Button icon={<MdBusiness />} onClick={() => handleAccept("contacts")} />
         </Dropdown>
 
         <Button

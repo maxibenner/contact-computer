@@ -43,6 +43,7 @@ const Home: NextPage = () => {
         "My name is Contact Computer. I'm a privacy focused, global address book that is always up to date.",
       type: "info",
       buttonText: "Sounds good",
+      doNotShowAgainId: "intro_1",
     });
   }, []);
 

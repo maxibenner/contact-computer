@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState, useContext } from "react";
 import {
   MdOutlineFavorite,
   MdPublic,
-  MdWork,
+  MdBusiness,
   MdEdit,
   MdSave,
   MdDelete,
@@ -77,7 +77,7 @@ export const AddressField = ({
   // Adjust icon and make sure that new elements start in write mode
   useEffect(() => {
     if (newAccess === "public") setIcon(<MdPublic />);
-    if (newAccess === "contacts") setIcon(<MdWork />);
+    if (newAccess === "contacts") setIcon(<MdBusiness />);
     if (newAccess === "friends") setIcon(<MdOutlineFavorite />);
 
     // Make sure that new ones are write initially
@@ -210,7 +210,7 @@ export const AddressField = ({
           {newAccess !== "contacts" && (
             <Button
               onClick={() => setNewAccess("contacts")}
-              icon={<MdWork />}
+              icon={<MdBusiness />}
             />
           )}
           {newAccess !== "friends" && (

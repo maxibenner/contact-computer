@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState, useContext } from "react";
 import {
   MdOutlineFavorite,
   MdPublic,
-  MdWork,
+  MdBusiness,
   MdSave,
   MdEdit,
   MdAdd,
@@ -15,7 +15,6 @@ import { SingleLineData } from "../../sdk/db";
 import { Dropdown } from "../dropdown/Dropdown";
 import { Spinner } from "../spinner/Spinner";
 import { ProfileContext } from "../../context/ProfileContext";
-
 
 /**
  * An element displaying user data
@@ -76,11 +75,11 @@ export const SingleLineField = ({
   // Change icons
   useEffect(() => {
     if (newAccess === "public") setIcon(<MdPublic />);
-    if (newAccess === "contacts") setIcon(<MdWork />);
+    if (newAccess === "contacts") setIcon(<MdBusiness />);
     if (newAccess === "friends") setIcon(<MdOutlineFavorite />);
 
     if (type === "phone") setPlaceholder("Phone number");
-    if (type === "web") setPlaceholder("URL or social tag");
+    if (type === "web") setPlaceholder("Website address");
     if (type === "email") setPlaceholder("Email address");
 
     // Make sure that new ones are write initially
@@ -185,7 +184,7 @@ export const SingleLineField = ({
           {newAccess !== "contacts" && (
             <Button
               onClick={() => handleAccessChange("contacts")}
-              icon={<MdWork />}
+              icon={<MdBusiness />}
             />
           )}
           {newAccess !== "friends" && (

@@ -1,0 +1,26 @@
+.wrapper {
+  width: 2rem;
+  height: 2rem;
+  color: #fff;
+  border: 3px solid #3e46e9;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.wrapper_active {
+  width: 2rem;
+  height: 2rem;
+  color: #fff;
+  border: 3px solid #3b43db;
+  background: #3b43db;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
