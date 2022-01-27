@@ -40,13 +40,15 @@ export const SpeechBubble = ({
               text={buttonText}
             />
           )}
-          <div
-            className={styles.dontShowAgainContainer}
-            onClick={() => setDoNotShowAgain()}
-          >
-            <Radio active={doNotShowAgain} />
-            <p>Don&apos;t show this again</p>
-          </div>
+          {notification?.doNotShowAgainId && (
+            <div
+              className={styles.dontShowAgainContainer}
+              onClick={() => setDoNotShowAgain()}
+            >
+              <Radio active={doNotShowAgain} />
+              <p>Don&apos;t show this again</p>
+            </div>
+          )}
         </div>
       </div>
     );

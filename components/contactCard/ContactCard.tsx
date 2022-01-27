@@ -1,32 +1,31 @@
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { supabase } from "../../sdk/supabase";
 import {
-  CSSProperties,
-  useEffect,
-  useState,
-  useRef,
   ChangeEvent,
+  CSSProperties,
   useContext,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
 import {
   MdAdd,
   MdArrowBack,
   MdGroupAdd,
+  MdGroupOff,
   MdOutlineClose,
-  MdWork,
   MdOutlineFavorite,
   MdPublic,
-  MdGroupOff,
+  MdWork,
 } from "react-icons/md";
+import { ProfileContext } from "../../context/ProfileContext";
 import {
   Access,
   AddressData,
   ContactType,
   DataType,
   Relationship,
-  SingleLineData,
   TransformedConnectionType,
 } from "../../sdk/db";
 import { AddressField } from "../addressField/AddressField";
@@ -37,7 +36,6 @@ import { NoDataPlaceholder } from "../noDataPlaceholder/NoDataPlaceholder";
 import { SingleLineField } from "../singleLineField/SingleLineField";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./contactCard.module.css";
-import { ProfileContext } from "../../context/ProfileContext";
 
 export const ContactCard = ({
   contact,
@@ -121,9 +119,6 @@ export const ContactCard = ({
     if (user) {
       // Set to active editing
       setActiveEdit(true);
-
-      // Create copy of data
-      const contactCopy = { ...localContact };
 
       // Create arbitrary id to facilitate cancel operation
       const randomId = (Math.random() * 99999999).toFixed(0) + "_local";
@@ -244,8 +239,12 @@ export const ContactCard = ({
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", marginBottom: "25px" }}>
           <div
-            className={styles.imageContainer}
-            onClick={() => handleChangeImage()}
+            className={
+              relationship === "self"
+                ? styles.imageContainer_interactive
+                : styles.imageContainer
+            }
+            onClick={() => relationship === "self" && handleChangeImage()}
           >
             <div
               style={{
