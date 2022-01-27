@@ -10,6 +10,9 @@ import { db_getContactSearchResult } from "../sdk/db";
 import Router from "next/router";
 import { NotificationContext } from "../context/NotificationContext";
 import { AuthContext } from "../context/AuthContext";
+import { LandingPageItem_1 } from "../components/landingPageItem_1/LandingPageItem_1";
+import { LandingPageItem_2 } from "../components/landingPageItem_2/LandingPageItem_2";
+import { LandingPageItem_3 } from "../components/landingPageItem_3/LandingPageItem_3";
 
 const Home: NextPage = () => {
   const [contacts, setContacts] = useState<any>([]);
@@ -55,7 +58,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div className={localStyles.container}>
+        <div className={localStyles.containerHero}>
           <h1 className={styles.heroText}>The global address book</h1>
           <Search onSearch={handleSearch} />
           <ContactSearchResults
@@ -64,6 +67,33 @@ const Home: NextPage = () => {
             style={{ margin: "10px 0" }}
           />
         </div>
+        <div className={localStyles.containerItem}>
+          <LandingPageItem_1 />
+        </div>
+        <div className={localStyles.containerItem}>
+          <LandingPageItem_2 />
+        </div>
+        <div
+          className={localStyles.containerItem}
+          style={{ margin: "10vh 35px 20vh 35px" }}
+        >
+          <LandingPageItem_3 />
+        </div>
+        <footer className={localStyles.footer}>
+          Copyright © 2022
+          <a
+            href="https:///www.fotura.co"
+            style={{
+              margin: "0 5px",
+              textDecoration: "underline",
+              height: "fit-content",
+            }}
+            target="_empty"
+          >
+            Fotura, Inc.
+          </a>
+          All rights reserved.
+        </footer>
       </main>
     </>
   );

@@ -20,7 +20,7 @@ a {
   box-sizing: border-box;
 
   /* Colors */
-  --color-main: rgb(69, 78, 247);;
+  --color-main: rgb(69, 78, 247);
   --color-main-light: #dadbf8;
   --color-error: #fc5759;
   --color-placeholder: rgb(236, 236, 236);
