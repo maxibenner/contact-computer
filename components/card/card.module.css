@@ -2,7 +2,8 @@
   position: relative;
   background-color: #fff;
   width: 400px;
-  max-width: 90%;
+  max-width: 80vw;
   box-shadow: 10px 10px 0px hsla(237, 20%, 62%, 1);
   padding: 30px;
 }
+
