@@ -157,6 +157,7 @@ export const db_acceptContactRequest = async (id: number, access: Access) => {
     .single();
 
   if (error) {
+    window.alert(error.message);
     return { data: null, error: { code: "400", message: error.message } };
   }
 
@@ -167,7 +168,8 @@ export const db_acceptContactRequest = async (id: number, access: Access) => {
       contact_id: data.owner_id,
       access: access,
     });
-    if (connectionRes.error)
+    if (connectionRes.error) {
+      window.alert(connectionRes.error.message);
       return {
         data: null,
         error: {
@@ -175,7 +177,7 @@ export const db_acceptContactRequest = async (id: number, access: Access) => {
           message: connectionRes.error.message,
         },
       };
-    else
+    } else
       return {
         data: connectionRes.data as any,
         error: null,

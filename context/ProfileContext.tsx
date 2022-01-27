@@ -73,7 +73,7 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
     if (user) reloadData();
   };
   const acceptContactRequest = async (id: number, access: Access) => {
-    const res = await db_acceptContactRequest(id, access);
+    await db_acceptContactRequest(id, access);
     if (user) await reloadData();
   };
   const saveContactInfo = async (
