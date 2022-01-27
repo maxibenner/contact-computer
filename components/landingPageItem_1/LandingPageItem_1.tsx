@@ -28,7 +28,7 @@ export const LandingPageItem_1 = () => {
       <div className={styles.textContainer}>
         <h2>Keep everyone in the loop</h2>
         <h1>
-          Your Contact Info <u>save</u> on the web
+          Your Contact Info <u>safe</u> on the web
         </h1>
         <p>Fill out your personal card to help your contacts stay in touch.</p>
       </div>
