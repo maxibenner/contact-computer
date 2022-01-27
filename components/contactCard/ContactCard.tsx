@@ -1,6 +1,7 @@
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 import {
   ChangeEvent,
   CSSProperties,
@@ -233,239 +234,256 @@ export const ContactCard = ({
     }
   };
 
-  return (
-    <Card style={style}>
-      {/* Main */}
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", marginBottom: "25px" }}>
-          <div
-            className={
-              relationship === "self"
-                ? styles.imageContainer_interactive
-                : styles.imageContainer
-            }
-            onClick={() => relationship === "self" && handleChangeImage()}
-          >
-            <div
-              style={{
-                opacity: isProfileImage ? 1 : 0,
-                position: isProfileImage ? "relative" : "absolute",
-                width: "100%",
-                height: "100%",
-                transition: ".3s",
-              }}
-            >
-              <Image
-                onLoadingComplete={() => setIsProfileImage(true)}
-                objectFit="cover"
-                layout="fill"
-                src={localContact.img_src}
-              />
-            </div>
-            {/*Loading*/}
-            <div style={{ display: isProfileImage ? "none" : "unset" }}>
-              <Spinner />
-            </div>
-            {/*Updating*/}
-            <div
-              style={{
-                display: isUpdating ? "unset" : "none",
-                position: "absolute",
-              }}
-            >
-              <Spinner />
-            </div>
-          </div>
-          <h1
-            style={{ fontSize: "2.8rem", margin: 0 }}
-          >{`${localContact.name} ${localContact.surname}`}</h1>
-        </div>
-        {/* Actions */}
+  /* ANIMATION */
+  const variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+  };
 
-        <div className={styles.contactButtonContainer}>
-          {(relationship === "following" || relationship === "none") && (
-            <Button
-              onClick={onSendContactRequest}
-              text={pendingContactRequest ? "Pending" : "Follow"}
-              iconStyle={{ fontSize: "2.6rem" }}
-              icon={<MdGroupAdd />}
-              loading={contactRequestLoading}
-              inactive={pendingContactRequest}
-              innerStyle={{ padding: "0 15px", width: "134px" }}
-            />
-          )}
-          {(relationship === "following" || relationship === "full") && user && (
-            <Dropdown
-              innerButtonStyle={{ padding: "0 15px", width: "118px" }}
-              text="Access"
-              loading={onChangeContactAccessLoading}
-              outsideToggle={accessDropdown}
-              icon={access === "friends" ? <MdOutlineFavorite /> : <MdWork />}
+  return (
+    <motion.div
+      style={{ margin: "10px" }}
+      animate={{ y: -10 }}
+      transition={{ duration: 0.2 }}
+      variants={variants}
+    >
+      <Card style={style}>
+        {/* Main */}
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", marginBottom: "25px" }}>
+            <div
+              className={
+                relationship === "self"
+                  ? styles.imageContainer_interactive
+                  : styles.imageContainer
+              }
+              onClick={() => relationship === "self" && handleChangeImage()}
             >
-              {access === "friends" && (
-                <Button
-                  text="Work"
-                  innerStyle={{ padding: "0 15px" }}
-                  onClick={() =>
-                    handleChangeContactAccess(user.id, contact.id, "contacts")
-                  }
-                  icon={<MdWork />}
+              <div
+                style={{
+                  opacity: isProfileImage ? 1 : 0,
+                  position: isProfileImage ? "relative" : "absolute",
+                  width: "100%",
+                  height: "100%",
+                  transition: ".3s",
+                }}
+              >
+                <Image
+                  onLoadingComplete={() => setIsProfileImage(true)}
+                  objectFit="cover"
+                  layout="fill"
+                  src={localContact.img_src}
                 />
-              )}
-              {access === "contacts" && (
-                <Button
-                  text="Friends"
-                  innerStyle={{ padding: "0 15px" }}
-                  onClick={() =>
-                    handleChangeContactAccess(user.id, contact.id, "friends")
-                  }
-                  icon={<MdOutlineFavorite />}
-                />
-              )}
+              </div>
+              {/*Loading*/}
+              <div style={{ display: isProfileImage ? "none" : "unset" }}>
+                <Spinner />
+              </div>
+              {/*Updating*/}
+              <div
+                style={{
+                  display: isUpdating ? "unset" : "none",
+                  position: "absolute",
+                }}
+              >
+                <Spinner />
+              </div>
+            </div>
+            <h1
+              style={{ fontSize: "2.8rem", margin: 0 }}
+            >{`${localContact.name} ${localContact.surname}`}</h1>
+          </div>
+          {/* Actions */}
+
+          <div className={styles.contactButtonContainer}>
+            {(relationship === "following" || relationship === "none") && (
               <Button
-                text="Public"
+                onClick={onSendContactRequest}
+                text={pendingContactRequest ? "Pending" : "Follow"}
+                iconStyle={{ fontSize: "2.6rem" }}
+                icon={<MdGroupAdd />}
+                loading={contactRequestLoading}
+                inactive={pendingContactRequest}
+                innerStyle={{ padding: "0 15px", width: "134px" }}
+              />
+            )}
+            {(relationship === "following" || relationship === "full") && user && (
+              <Dropdown
+                innerButtonStyle={{ padding: "0 15px", width: "118px" }}
+                text="Access"
+                loading={onChangeContactAccessLoading}
+                outsideToggle={accessDropdown}
+                icon={access === "friends" ? <MdOutlineFavorite /> : <MdWork />}
+              >
+                {access === "friends" && (
+                  <Button
+                    text="Work"
+                    innerStyle={{ padding: "0 15px" }}
+                    onClick={() =>
+                      handleChangeContactAccess(user.id, contact.id, "contacts")
+                    }
+                    icon={<MdWork />}
+                  />
+                )}
+                {access === "contacts" && (
+                  <Button
+                    text="Friends"
+                    innerStyle={{ padding: "0 15px" }}
+                    onClick={() =>
+                      handleChangeContactAccess(user.id, contact.id, "friends")
+                    }
+                    icon={<MdOutlineFavorite />}
+                  />
+                )}
+                <Button
+                  text="Public"
+                  innerStyle={{ padding: "0 15px" }}
+                  onClick={() =>
+                    handleRemoveContact(user.id, contact.id, "revoke_access")
+                  }
+                  icon={<MdPublic />}
+                  backgroundColor="var(--color-error)"
+                  loading={onRemoveConnectionLoadingRevoke}
+                />
+              </Dropdown>
+            )}
+            {(relationship === "follower" || relationship === "full") &&
+              user && (
+                <Button
+                  text="Unfollow"
+                  innerStyle={{ padding: "0 15px", width: "134px" }}
+                  onClick={() =>
+                    handleRemoveContact(contact.id, user.id, "unfollow")
+                  }
+                  loading={onRemoveConnectionLoadingUnfollow}
+                  icon={<MdGroupOff />}
+                  backgroundColor="var(--color-grey)"
+                />
+              )}
+          </div>
+          {/* Data */}
+          <div>
+            {localContact.email.length > 0 && (
+              <>
+                <h1 style={{ margin: "20px 0 8px 0" }}>Email</h1>
+                {localContact.email.map((email) => (
+                  <SingleLineField
+                    key={email.value}
+                    type="email"
+                    data={email}
+                    onCancel={handleCancel}
+                    editable={relationship === "self"}
+                    self={relationship === "self"}
+                    onSubmitEnd={() => setActiveEdit(false)}
+                  />
+                ))}
+              </>
+            )}
+            {localContact.phone.length > 0 && (
+              <>
+                <h1 style={{ margin: "40px 0 8px 0" }}>Phone</h1>
+                {localContact.phone.map((phone) => (
+                  <SingleLineField
+                    key={phone.value}
+                    type="phone"
+                    data={phone}
+                    onCancel={handleCancel}
+                    editable={relationship === "self"}
+                    self={relationship === "self"}
+                    onSubmitEnd={() => setActiveEdit(false)}
+                  />
+                ))}
+              </>
+            )}
+            {localContact.web.length > 0 && (
+              <>
+                <h1 style={{ margin: "40px 0 8px 0" }}>Web</h1>
+                {localContact.web.map((web) => (
+                  <SingleLineField
+                    key={web.value}
+                    type="web"
+                    data={web}
+                    onCancel={handleCancel}
+                    editable={relationship === "self"}
+                    self={relationship === "self"}
+                    onSubmitEnd={() => setActiveEdit(false)}
+                  />
+                ))}
+              </>
+            )}
+            {localContact.address.length > 0 && (
+              <>
+                <h1 style={{ margin: "40px 0 8px 0" }}>Address</h1>
+                {localContact.address.map((address) => (
+                  <AddressField
+                    key={address.street}
+                    data={address}
+                    onCancel={handleCancel}
+                    editable={relationship === "self"}
+                    self={relationship === "self"}
+                    onSubmitEnd={() => setActiveEdit(false)}
+                  />
+                ))}
+              </>
+            )}
+            {localContact.phone.length === 0 &&
+              localContact.email.length === 0 &&
+              localContact.web.length === 0 &&
+              localContact.address.length === 0 && (
+                <NoDataPlaceholder
+                  style={{ marginTop: "25px" }}
+                  text="No Data"
+                />
+              )}
+          </div>
+          {relationship === "self" ? (
+            <Dropdown
+              outsideToggle={dropdownToggle}
+              inactive={activeEdit}
+              icon={<MdAdd />}
+              iconActive={<MdOutlineClose />}
+              style={{ position: "absolute", top: -20, left: -20 }}
+            >
+              <Button
+                onClick={() => handleAddData("phone")}
                 innerStyle={{ padding: "0 15px" }}
-                onClick={() =>
-                  handleRemoveContact(user.id, contact.id, "revoke_access")
-                }
-                icon={<MdPublic />}
-                backgroundColor="var(--color-error)"
-                loading={onRemoveConnectionLoadingRevoke}
+                text="Phone"
+              />
+              <Button
+                onClick={() => handleAddData("email")}
+                innerStyle={{ padding: "0 15px" }}
+                text="Email"
+              />
+              <Button
+                onClick={() => handleAddData("web")}
+                innerStyle={{ padding: "0 15px" }}
+                text="Web"
+              />
+              <Button
+                onClick={() => handleAddData("address")}
+                innerStyle={{ padding: "0 15px" }}
+                text="Address"
               />
             </Dropdown>
-          )}
-          {(relationship === "follower" || relationship === "full") && user && (
-            <Button
-              text="Unfollow"
-              innerStyle={{ padding: "0 15px", width: "134px" }}
-              onClick={() =>
-                handleRemoveContact(contact.id, user.id, "unfollow")
-              }
-              loading={onRemoveConnectionLoadingUnfollow}
-              icon={<MdGroupOff />}
-              backgroundColor="var(--color-grey)"
-            />
+          ) : (
+            <>
+              {backHref && (
+                <Button
+                  onClick={() => router.push(backHref)}
+                  icon={<MdArrowBack />}
+                  style={{ position: "absolute", top: -20, left: -20 }}
+                />
+              )}
+            </>
           )}
         </div>
-        {/* Data */}
-        <div>
-          {localContact.email.length > 0 && (
-            <>
-              <h1 style={{ margin: "20px 0 8px 0" }}>Email</h1>
-              {localContact.email.map((email) => (
-                <SingleLineField
-                  key={email.value}
-                  type="email"
-                  data={email}
-                  onCancel={handleCancel}
-                  editable={relationship === "self"}
-                  self={relationship === "self"}
-                  onSubmitEnd={() => setActiveEdit(false)}
-                />
-              ))}
-            </>
-          )}
-          {localContact.phone.length > 0 && (
-            <>
-              <h1 style={{ margin: "40px 0 8px 0" }}>Phone</h1>
-              {localContact.phone.map((phone) => (
-                <SingleLineField
-                  key={phone.value}
-                  type="phone"
-                  data={phone}
-                  onCancel={handleCancel}
-                  editable={relationship === "self"}
-                  self={relationship === "self"}
-                  onSubmitEnd={() => setActiveEdit(false)}
-                />
-              ))}
-            </>
-          )}
-          {localContact.web.length > 0 && (
-            <>
-              <h1 style={{ margin: "40px 0 8px 0" }}>Web</h1>
-              {localContact.web.map((web) => (
-                <SingleLineField
-                  key={web.value}
-                  type="web"
-                  data={web}
-                  onCancel={handleCancel}
-                  editable={relationship === "self"}
-                  self={relationship === "self"}
-                  onSubmitEnd={() => setActiveEdit(false)}
-                />
-              ))}
-            </>
-          )}
-          {localContact.address.length > 0 && (
-            <>
-              <h1 style={{ margin: "40px 0 8px 0" }}>Address</h1>
-              {localContact.address.map((address) => (
-                <AddressField
-                  key={address.street}
-                  data={address}
-                  onCancel={handleCancel}
-                  editable={relationship === "self"}
-                  self={relationship === "self"}
-                  onSubmitEnd={() => setActiveEdit(false)}
-                />
-              ))}
-            </>
-          )}
-          {localContact.phone.length === 0 &&
-            localContact.email.length === 0 &&
-            localContact.web.length === 0 &&
-            localContact.address.length === 0 && (
-              <NoDataPlaceholder style={{ marginTop: "25px" }} text="No Data" />
-            )}
-        </div>
-        {relationship === "self" ? (
-          <Dropdown
-            outsideToggle={dropdownToggle}
-            inactive={activeEdit}
-            icon={<MdAdd />}
-            iconActive={<MdOutlineClose />}
-            style={{ position: "absolute", top: -20, left: -20 }}
-          >
-            <Button
-              onClick={() => handleAddData("phone")}
-              innerStyle={{ padding: "0 15px" }}
-              text="Phone"
-            />
-            <Button
-              onClick={() => handleAddData("email")}
-              innerStyle={{ padding: "0 15px" }}
-              text="Email"
-            />
-            <Button
-              onClick={() => handleAddData("web")}
-              innerStyle={{ padding: "0 15px" }}
-              text="Web"
-            />
-            <Button
-              onClick={() => handleAddData("address")}
-              innerStyle={{ padding: "0 15px" }}
-              text="Address"
-            />
-          </Dropdown>
-        ) : (
-          <>
-            {backHref && (
-              <Button
-                onClick={() => router.push(backHref)}
-                icon={<MdArrowBack />}
-                style={{ position: "absolute", top: -20, left: -20 }}
-              />
-            )}
-          </>
-        )}
-      </div>
-      <input
-        style={{ display: "none" }}
-        onChange={handleFileChange}
-        ref={imgInputRef as any}
-        type="file"
-      />
-    </Card>
+        <input
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+          ref={imgInputRef as any}
+          type="file"
+        />
+      </Card>
+    </motion.div>
   );
 };
