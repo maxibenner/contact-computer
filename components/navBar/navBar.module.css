@@ -5,7 +5,7 @@
   justify-content: space-between;
   top: 0;
   width: 100%;
-  background: #454ef7;
+  background: var(--color-main);
   padding: 10px 25px;
   height: 90px;
 }

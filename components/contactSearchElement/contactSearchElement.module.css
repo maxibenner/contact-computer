@@ -8,13 +8,13 @@
   outline: none;
 }
 .container:hover {
-  background-color: #454ef7;
+  background: var(--color-main);
   color: #fff;
 }
 .container:focus,
 .container:active {
   color: #fff;
-  background-color: #454ef7;
+  background: var(--color-main);
 }
 .imgContainer {
   flex-shrink: 0;

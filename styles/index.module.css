@@ -2,18 +2,3 @@
   margin: 20vh 35px 70px 35px;
   max-width: 450px;
 }
-@media (max-width: 500px) {
-  .container {
-    margin-top: 15vh;
-  }
-}
-@media (max-width: 400px) {
-  .container {
-    margin-top: 10vh;
-  }
-}
-@media (max-width: 350px) {
-  .heroText {
-    font-size: 3.5rem;
-  }
-}

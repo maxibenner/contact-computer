@@ -4,10 +4,19 @@
   width: 100%;
 }
 .heroText {
-  color: #454ef7;
   margin: 0 0 25px 0;
   font-size: 7rem;
+  background-clip: text;
+  color: transparent;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgb(14, 115, 204),
+    rgb(98, 75, 187),
+    rgb(243, 88, 21),
+    rgb(254, 213, 74)
+  );
 }
+
 @media (max-width: 500px) {
   .heroText {
     font-size: 5rem;
