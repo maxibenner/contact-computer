@@ -237,14 +237,15 @@ export const ContactCard = ({
   /* ANIMATION */
   const variants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1 },
+    visible: { opacity: 1, y: -10 },
   };
 
   return (
     <motion.div
       style={{ margin: "10px" }}
-      animate={{ y: -10 }}
-      transition={{ duration: 0.2 }}
+      initial="hidden"
+      animate="visible"
+      transition={{ duration: .3 }}
       variants={variants}
     >
       <Card style={style}>
