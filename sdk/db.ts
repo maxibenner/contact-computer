@@ -2,7 +2,6 @@ import { makeId } from "../utils/makeId";
 import { supabase } from "./supabase";
 
 export const db_getContactSearchResult = async (query: string) => {
-  console.log(query);
   return await supabase.rpc("get_contacts_by_name", {
     query: query,
   });
@@ -10,103 +9,57 @@ export const db_getContactSearchResult = async (query: string) => {
 
 // GET CONTACT
 export const db_getContact = async (id: string) => {
-  // Get profile
-  const profilePromise: Promise<ContactType> = new Promise(
-    async (resolve, reject) => {
-      const { data, error } = await supabase
-        .from("profile")
-        .select(
-          "id, name, surname, img_src, phone (*), email (*), web(*), address(*), requests_received:request!recipient_id(*,owner:owner_id(*)),requests_sent:request!owner_id(*,owner:owner_id(*)), followers:connection!owner_id(contact:contact_id(*), owner:owner_id(*), access), following:connection!contact_id(contact:contact_id(*), owner:owner_id(*), access)"
-        )
-        .eq("id", id)
-        .limit(1)
-        .single();
+  // Get profile with scrambled connections
+  const { data, error } = await supabase
+    .from("profile")
+    .select(
+      "id, name, surname, img_src, phone (*), email (*), web(*), address(*), requests_received:request!recipient_id(*,owner:owner_id(*)),requests_sent:request!owner_id(*,owner:owner_id(*)), contact_o:connection!owner_id(data:contact_id(*), id), contact_r:connection!contact_id(data:owner_id(*), id)"
+    )
+    .eq("id", id)
+    .limit(1)
+    .single();
 
-      if (error) {
-        if (error.code === "406") {
-          console.log(error);
-          reject("Not set up");
-        } else {
-          console.log(error);
-          reject("Problem with profile");
-        }
-      } else resolve(data);
-    }
-  );
-
-  // Get connections
-  const contactPromise: Promise<{
-    follows_contact: {
-      contact: { id: string };
-      owner: { id: string };
-      access: Access;
-    }[];
-    contact_follows: {
-      contact: { id: string };
-      owner: { id: string };
-      access: Access;
-    }[];
-  }> = new Promise(async (resolve, reject) => {
-    const { data, error } = await supabase
-      .from("profile")
-      .select(
-        "follows_contact:connection!owner_id(contact:contact_id(*), owner:owner_id(*), access), contact_follows:connection!contact_id(contact:contact_id(*), owner:owner_id(*), access)"
-      )
-      .eq("id", id)
-      .single();
-
-    if (error) reject("Problem with contacts");
-    else resolve(data);
-  });
-
-  return await Promise.all([profilePromise, contactPromise])
-    .then(([profileRes, contactRes]) => {
-      let contactsObj = <{ [key: string]: TransformedConnectionType }>{};
-      let contactsArr = <TransformedConnectionType[]>[];
-
-      // Copy data
-      const follows_contact = contactRes.follows_contact;
-      const contact_follows = contactRes.contact_follows;
-
-      follows_contact.map((follower) => {
-        const key = follower.contact.id;
-        return (contactsObj[key] = <TransformedConnectionType>{
-          contact: follower.contact,
-          access: follower.access,
-          follows_contact: true,
-          contact_follows: false,
-        });
-      });
-
-      contact_follows.forEach((contact) => {
-        const key = contact.owner.id;
-        if (contactsObj[key]) {
-          contactsObj[key] = {
-            ...contactsObj[key],
-            contact_follows: true,
-            access: contact.access,
-          };
-        } else {
-          contactsObj[key] = <TransformedConnectionType>{
-            contact: contact.owner,
-            access: contact.access,
-            follows_contact: false,
-            contact_follows: true,
-          };
-        }
-      });
-
-      contactsArr = Object.values<TransformedConnectionType>(contactsObj);
-
+  if (error) {
+    if (
+      error.code === "406" ||
+      error.message === "JSON object requested, multiple (or no) rows returned"
+    ) {
+      console.log("Not set up");
       return {
-        data: { ...profileRes, contact: contactsArr },
-        error: null,
+        data: data,
+        error: { message: "Not set up" },
       };
-    })
-    .catch((err) => {
-      console.log(err);
-      return { data: null, error: { message: "Not set up" } };
-    });
+    } else {
+      return {
+        data: data,
+        error: error,
+      };
+    }
+  } else {
+    // Merge contacts
+    const contacts = [...data.contact_o, ...data.contact_r];
+
+    // Update profile object
+    const newData = {
+      address: data.address,
+      contact: contacts,
+      email: data.email,
+      id: data.id,
+      img_src: data.img_src,
+      name: data.name,
+      phone: data.phone,
+      requests_received: data.requests_received,
+      requests_sent: data.requests_sent,
+      surname: data.surname,
+      web: data.web,
+    };
+    console.log(newData);
+
+    return {
+      data: newData,
+      error: null,
+    };
+  }
 };
 
 // SAVE
@@ -138,50 +91,50 @@ export const db_sendContactRequest = (owner_id: string, recipient_id: string) =>
     .insert([{ owner_id: owner_id, recipient_id: recipient_id }]);
 
 /**
- * Accept contact request and set access
+ * Accept contact request
  *
  * Prerequisites:
  * - User needs to be authenticated
  * - User needs to be recipient of request
  *
  * @param id - Primary key of request
- * @param access - The access level the contact will have on the user's data
  */
-export const db_acceptContactRequest = async (id: number, access: Access) => {
-  // Delete request
-  const { data, error } = await supabase
-    .from("request")
-    .delete({ returning: "representation" })
-    .eq("id", id)
-    .limit(1)
-    .single();
-
-  if (error) {
-    window.alert(error.message);
-    return { data: null, error: { code: "400", message: error.message } };
-  }
-
+export const db_acceptContactRequest = async (
+  recipient_id: string,
+  owner_id: string
+) => {
   // Add connection
-  if (data as Request) {
-    const connectionRes = await supabase.from("connection").insert({
-      owner_id: data.recipient_id,
-      contact_id: data.owner_id,
-      access: access,
-    });
-    if (connectionRes.error) {
-      window.alert(connectionRes.error.message);
-      return {
-        data: null,
-        error: {
-          code: connectionRes.error.code,
-          message: connectionRes.error.message,
-        },
-      };
-    } else
-      return {
-        data: connectionRes.data as any,
-        error: null,
-      };
+  const connectionRes = await supabase.from("connection").insert({
+    owner_id: recipient_id,
+    contact_id: owner_id,
+    access: "friends",
+  });
+  if (connectionRes.error) {
+    console.log(connectionRes.error.message);
+    return {
+      data: null,
+      error: {
+        code: connectionRes.error.code,
+        message: connectionRes.error.message,
+      },
+    };
+  } else {
+    // Delete request
+    const { data, error } = await supabase
+      .from("request")
+      .delete({ returning: "representation" })
+      .eq("recipient_id", recipient_id)
+      .limit(1)
+      .single();
+
+    if (error) {
+      console.log(error.message);
+      return { data: null, error: { code: "400", message: error.message } };
+    }
+    return {
+      data: connectionRes.data as any,
+      error: null,
+    };
   }
 };
 
@@ -235,15 +188,11 @@ export const db_changeContactAcccess = async (
  * @param contact_id - Uid of contact
  * @param access - New access type
  */
-export const db_removeConnection = async (
-  owner_id: string,
-  contact_id: string
-) => {
+export const db_removeConnection = async (id: number) => {
   const { data, error } = await supabase
     .from("connection")
     .delete()
-    .eq("owner_id", owner_id)
-    .eq("contact_id", contact_id);
+    .eq("id", id);
   console.log(error);
 };
 
@@ -369,15 +318,13 @@ export type Connection = {
   access: Access;
 };
 export type TransformedConnectionType = {
-  contact: {
+  data: {
     id: string;
     name: string;
     surname: string;
     img_src: string;
   };
-  follows_contact: boolean;
-  contact_follows: boolean;
-  access: Access;
+  id: number;
 };
 export type DataType = "phone" | "email" | "web" | "address";
 export type Access = "public" | "contacts" | "friends";
@@ -385,7 +332,7 @@ export type Relationship =
   | "full"
   | "follower"
   | "following"
-  | "requesting"
+  | "pending"
   | "none"
   | "self"
   | undefined;

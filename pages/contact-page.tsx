@@ -15,35 +15,32 @@ export default function ContactPage() {
   // Notifications
   const [notification, setNotification] = useContext(NotificationContext);
 
-  // User
+  // User & profile functions
   const user = useContext(AuthContext);
-
-  // User profile
   const { profile, sendContactRequest, changeContactAccess, removeConnection } =
     useContext(ProfileContext);
 
-  // Contact
+  // Get contact from query
   const [contact, setContact] = useState<ContactType>();
   useEffect(() => {
-    loadContact();
-  }, [profile, router]);
-
-  const loadContact = async () => {
     const queryId = router.query.u;
     if (queryId && typeof queryId === "string") {
-      const { data, error } = await db_getContact(queryId);
-      if (data) setContact(data);
+      db_getContact(queryId).then(({ data, error }) => {
+        if (data) {
+          // Set contacts
+          setContact(data);
+        }
+      });
     }
-  };
+  }, [user, router]);
 
-  // Check for relationship between user and selected contact
+  // Check for relationship between authenticated user and contact
   const [relationship, setRelationship] = useState<Relationship>(undefined);
   useEffect(() => {
-    if (contact) {
-      const relationShip = checkRelationship(profile, contact);
-      setRelationship(relationShip);
+    if (contact && profile) {
+      setRelationship(checkRelationship(profile, contact.id));
     }
-  }, [contact]);
+  }, [contact, profile]);
 
   // Handle contact request
   const [contactRequestLoading, setContactRequestLoading] = useState(false);
@@ -63,59 +60,31 @@ export default function ContactPage() {
   };
 
   // Check for pending, outgoing requests
-  const [pendingRequest, setPendingRequest] = useState(false);
-  useEffect(() => {
-    checkForPendingRequest();
-  }, [contact]);
-  const checkForPendingRequest = () => {
-    if (contact) {
-      for (let i = 0; i < contact.requests_received.length; i++) {
-        if (contact.requests_received[i].recipient_id === contact.id) {
-          setPendingRequest(true);
-          break;
-        }
-      }
-    }
-  };
+  // const [pendingRequest, setPendingRequest] = useState(false);
+  // useEffect(() => {
+  //   checkForPendingRequest();
+  // }, [contact]);
+  // const checkForPendingRequest = () => {
+  //   if (contact) {
+  //     for (let i = 0; i < contact.requests_received.length; i++) {
+  //       if (contact.requests_received[i].recipient_id === contact.id) {
+  //         setPendingRequest(true);
+  //         break;
+  //       }
+  //     }
+  //   }
+  // };
 
   // Handle change contact access
-  const [onChangeContactAccessLoading, setOnChangeContactAccessLoading] =
-    useState(false);
-  const handleChangeContactAccess = async (
-    owner_id: string,
-    contact_id: string,
-    access: Access
-  ) => {
-    setOnChangeContactAccessLoading(true);
-    await changeContactAccess(owner_id, contact_id, access);
-    setOnChangeContactAccessLoading(false);
-  };
-
-  // Handle change contact access
-  const [onRemoveConnectionLoadingRevoke, setOnRemoveConnectionLoadingRevoke] =
-    useState(false);
   const [
     onRemoveConnectionLoadingUnfollow,
     setOnRemoveConnectionLoadingUnfollow,
   ] = useState(false);
-  const handleRemoveConnection = async (
-    owner_id: string,
-    contact_id: string,
-    type: "revoke_access" | "unfollow"
-  ) => {
-    type === "revoke_access"
-      ? setOnRemoveConnectionLoadingRevoke(true)
-      : setOnRemoveConnectionLoadingUnfollow(true);
-
-    await removeConnection(owner_id, contact_id);
-
-    type === "revoke_access"
-      ? setOnRemoveConnectionLoadingRevoke(false)
-      : setOnRemoveConnectionLoadingUnfollow(false);
+  const handleRemoveConnection = async (id: number) => {
+    setOnRemoveConnectionLoadingUnfollow(true);
+    await removeConnection(id);
+    setOnRemoveConnectionLoadingUnfollow(false);
   };
-
-  // Only return if relationship is defined
-  if (!relationship) return null;
 
   return (
     <div className={styles.container}>
@@ -134,11 +103,7 @@ export default function ContactPage() {
             relationship={relationship}
             contactRequestLoading={contactRequestLoading}
             onSendContactRequest={handleSendContactRequest}
-            pendingContactRequest={pendingRequest}
-            onChangeContactAccess={handleChangeContactAccess}
-            onChangeContactAccessLoading={onChangeContactAccessLoading}
             onRemoveConnection={handleRemoveConnection}
-            onRemoveConnectionLoadingRevoke={onRemoveConnectionLoadingRevoke}
             onRemoveConnectionLoadingUnfollow={
               onRemoveConnectionLoadingUnfollow
             }

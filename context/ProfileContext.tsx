@@ -23,9 +23,8 @@ import { NotificationContext } from "./NotificationContext";
 
 export const ProfileContext = createContext<{
   profile: null | undefined | ContactType;
-  // requests: Request[];
   declineContactRequest: (id: number) => Promise<void>;
-  acceptContactRequest: (id: number, access: Access) => Promise<void>;
+  acceptContactRequest: (sender_id: string) => Promise<void>;
   sendContactRequest: (recipient_id: string) => Promise<void>;
   saveContactInfo: (
     data: SingleLineData | AddressData,
@@ -37,7 +36,7 @@ export const ProfileContext = createContext<{
     contact_id: string,
     access: Access
   ) => Promise<void>;
-  removeConnection: (owner_id: string, contact_id: string) => Promise<void>;
+  removeConnection: (id: number) => Promise<void>;
   updateProfileImage: (file: File) => Promise<void>;
   reloadData: () => Promise<void>;
 }>(undefined as any);
@@ -72,9 +71,11 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
     await db_declineContactRequest(id);
     if (user) reloadData();
   };
-  const acceptContactRequest = async (id: number, access: Access) => {
-    await db_acceptContactRequest(id, access);
-    if (user) await reloadData();
+  const acceptContactRequest = async (sender_id: string) => {
+    if (user) {
+      await db_acceptContactRequest(user.id, sender_id);
+      await reloadData();
+    }
   };
   const saveContactInfo = async (
     data: SingleLineData | AddressData,
@@ -113,8 +114,8 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
     await db_changeContactAcccess(owner_id, contact_id, access);
     await reloadData();
   };
-  const removeConnection = async (owner_id: string, contact_id: string) => {
-    await db_removeConnection(owner_id, contact_id);
+  const removeConnection = async (id: number) => {
+    await db_removeConnection(id);
     await reloadData();
   };
   const updateProfileImage = async (file: File) => {
@@ -122,7 +123,9 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
     if (file.size >= 5000000) {
       return setNotification({
         title: "Warning",
-        description: `Your selected image has a file size of ${(file.size / 1000000).toFixed(0)} Mb. Please keep it under 5 MB.`,
+        description: `Your selected image has a file size of ${(
+          file.size / 1000000
+        ).toFixed(0)} Mb. Please keep it under 5 MB.`,
         type: "error",
         buttonText: "Ok",
       });

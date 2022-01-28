@@ -21,9 +21,9 @@ export const RequestListElement = ({ data }: { data: Request }) => {
   const [acceptLoading, setAcceptLoading] = useState(false);
   const [declineLoading, setDeclineLoading] = useState(false);
 
-  const handleAccept = async (access: Access) => {
+  const handleAccept = async () => {
     setAcceptLoading(true);
-    await acceptContactRequest(data.id, access);
+    await acceptContactRequest(data.owner.id);
   };
   const handleDecline = async () => {
     setDeclineLoading(true);
@@ -49,19 +49,11 @@ export const RequestListElement = ({ data }: { data: Request }) => {
         </h3>
       </div>
       <div className={styles.buttonContainer}>
-        <Dropdown
+        <Button
           loading={acceptLoading}
-          position="left"
           icon={<MdCheck />}
-          iconActive={<MdOutlineClose />}
-        >
-          <Button
-            icon={<MdOutlineFavorite />}
-            onClick={() => handleAccept("friends")}
-          />
-          <Button icon={<MdBusiness />} onClick={() => handleAccept("contacts")} />
-        </Dropdown>
-
+          onClick={handleAccept}
+        />
         <Button
           loading={declineLoading}
           icon={<MdOutlineClose />}

@@ -1,8 +1,7 @@
 import { ReactNode, useEffect, useState, useContext } from "react";
 import {
-  MdOutlineFavorite,
   MdPublic,
-  MdBusiness,
+  MdGroup,
   MdSave,
   MdEdit,
   MdAdd,
@@ -75,8 +74,8 @@ export const SingleLineField = ({
   // Change icons
   useEffect(() => {
     if (newAccess === "public") setIcon(<MdPublic />);
-    if (newAccess === "contacts") setIcon(<MdBusiness />);
-    if (newAccess === "friends") setIcon(<MdOutlineFavorite />);
+    if (newAccess === "contacts") setIcon(<MdGroup />);
+    if (newAccess === "friends") setIcon(<MdGroup />);
 
     if (type === "phone") setPlaceholder("Phone number");
     if (type === "web") setPlaceholder("Website address");
@@ -181,16 +180,10 @@ export const SingleLineField = ({
               icon={<MdPublic />}
             />
           )}
-          {newAccess !== "contacts" && (
-            <Button
-              onClick={() => handleAccessChange("contacts")}
-              icon={<MdBusiness />}
-            />
-          )}
           {newAccess !== "friends" && (
             <Button
               onClick={() => handleAccessChange("friends")}
-              icon={<MdOutlineFavorite />}
+              icon={<MdGroup />}
             />
           )}
         </Dropdown>

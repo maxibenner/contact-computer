@@ -1,95 +1,37 @@
-import {
-  ContactType,
-  Relationship,
-  TransformedConnectionType,
-} from "../sdk/db";
+import { ContactType, Relationship } from "../sdk/db";
 
 export const checkRelationship = (
   profile: ContactType | null | undefined,
-  contact: ContactType | null | undefined
+  contact_id: string | null | undefined
 ) => {
   // Track relationship
   let relationship: Relationship = "none";
 
   // Start check
-  if (profile && contact) {
+  if (profile && contact_id) {
     // -> User profile and contact profile fetched
 
-    if (contact.contact.length > 0) {
-      // -> Contact has contacts
+    if (profile.contact.length > 0) {
+      // -> User has contacts
 
-      // Check if any of the contact's contacts is user
-      contact.contact.forEach((contact) => {
-        if (contact.contact.id === profile.id) {
+      // Check if any of the user's contacts have id of contact
+      for (let i = 0; i < profile.contact.length; i++) {
+        if (profile.contact[i].data.id === contact_id) {
           // -> Found user in contact's contacts
-
-          if (contact.follows_contact) {
-            relationship = "follower";
-          } // -> Only follows user
-
-          if (contact.contact_follows) {
-            relationship = "following";
-          } // -> User only follows
-
-          if (contact.follows_contact && contact.contact_follows) {
-            relationship = "full";
-          } // -> Connected both ways
-        } else {
-          // -> User not found in contact's contacts
-          relationship = "none";
+          relationship = "full";
+          break;
         }
-      });
-    }
-
-    // Check for pending requests
-    for (let i = 0; i < contact.requests_sent.length; i++) {
-      if (contact.requests_sent[i].owner.id === profile.id) {
-        relationship = "requesting";
-        break;
       }
     }
 
-    // No relationship exists
-  } else relationship = "none"; // No relationship
+    // Check for pending requests
+    for (let i = 0; i < profile.requests_sent.length; i++) {
+      if (profile.requests_sent[i].recipient_id === contact_id) {
+        relationship = "pending";
+        break;
+      }
+    }
+  } // No relationship
 
   return relationship;
 };
-
-// export const checkRelationshipWithoutLoop = (
-//   profile: ContactType | null | undefined,
-//   contact: TransformedConnectionType | null | undefined
-// ) => {
-//   // Track relationship
-//   let relationship: Relationship = null;
-
-//   // Start check
-//   if (profile) {
-//     // -> User profile fetched
-//     if (contact) {
-//       // -> Contact fetched
-
-//       if (contact.contact.id === profile.id) {
-//         // -> Found user in contact's contacts
-//         if (contact.follows_contact && contact.contact_follows) {
-//           relationship = "full";
-//         }
-//         // -> Connected both ways
-//         if (contact.follows_contact) {
-//           relationship = "follower";
-//         }
-//         // -> Only follows user
-//         if (contact.contact_follows) {
-//           relationship = "following";
-//         }
-//         // -> User only follows
-//       } else {
-//         // -> User not found in contact's contacts
-//         relationship = "none";
-//       }
-
-//       // No relationship exists
-//     } else relationship = "none"; // No relationship
-//   }
-
-//   return relationship;
-// };

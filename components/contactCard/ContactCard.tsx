@@ -37,6 +37,7 @@ import { NoDataPlaceholder } from "../noDataPlaceholder/NoDataPlaceholder";
 import { SingleLineField } from "../singleLineField/SingleLineField";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./contactCard.module.css";
+import { checkRelationship } from "../../utils/checkRelationship";
 
 export const ContactCard = ({
   contact,
@@ -45,11 +46,7 @@ export const ContactCard = ({
   relationship,
   onSendContactRequest,
   contactRequestLoading,
-  pendingContactRequest,
-  onChangeContactAccess,
-  onChangeContactAccessLoading,
   onRemoveConnection,
-  onRemoveConnectionLoadingRevoke,
   onRemoveConnectionLoadingUnfollow,
   user,
 }: {
@@ -59,23 +56,12 @@ export const ContactCard = ({
   relationship: Relationship;
   onSendContactRequest?: () => void;
   contactRequestLoading?: boolean;
-  pendingContactRequest?: boolean;
-  onChangeContactAccess?: (
-    owner_id: string,
-    contact_id: string,
-    access: Access
-  ) => void;
-  onChangeContactAccessLoading?: boolean;
-  onRemoveConnection?: (
-    owner_id: string,
-    contact_id: string,
-    type: "unfollow" | "revoke_access"
-  ) => void;
-  onRemoveConnectionLoadingRevoke?: boolean;
+  onRemoveConnection?: (id: number) => void;
   onRemoveConnectionLoadingUnfollow?: boolean;
   user?: User | null;
 }) => {
   const router = useRouter();
+  console.log("Contact Card")
 
   // Toggle add dropdown
   const [dropdownToggle, setDropdownToggle] = useState(false);
@@ -88,21 +74,6 @@ export const ContactCard = ({
 
   // Profile context
   const { updateProfileImage } = useContext(ProfileContext);
-
-  // Get access
-  const [access, setAccess] = useState("public");
-  useEffect(() => {
-    if (contact && user) {
-      for (let i = 0; i < contact.contact.length; i++) {
-        if (
-          contact.contact[i].contact.id === user.id &&
-          contact.contact[i].contact_follows
-        ) {
-          setAccess(contact.contact[i].access);
-        }
-      }
-    }
-  }, [contact]);
 
   // Local copy of contact data and keep updated
   const [localContact, setLocalContact] = useState<ContactType>(contact);
@@ -134,7 +105,7 @@ export const ContactCard = ({
             {
               id: randomId,
               label: "",
-              access: "public",
+              access: "friends",
               street: "",
               city: "",
               state: "",
@@ -154,7 +125,7 @@ export const ContactCard = ({
               id: randomId,
               label: "",
               value: "",
-              access: "public",
+              access: "friends",
               startEditing: true,
               owner_id: user.id,
             },
@@ -191,29 +162,14 @@ export const ContactCard = ({
     setActiveEdit(false);
   };
 
-  // For dropdown close
-  const handleChangeContactAccess = (
-    uid: string,
-    contact_id: string,
-    type: "contacts" | "friends"
-  ) => {
-    if (onChangeContactAccess) {
-      setAccessDropdown((prev) => !prev);
-      onChangeContactAccess(uid, contact_id, type);
-    }
-  };
-  const handleRemoveContact = (
-    contact_id: string,
-    uid: string,
-    type: "revoke_access" | "unfollow"
-  ) => {
-    if (onRemoveConnection) {
-      if (type === "revoke_access") {
-        setAccessDropdown((prev) => !prev);
-        onRemoveConnection(contact_id, uid, "revoke_access");
-      } else {
-        onRemoveConnection(contact_id, uid, "unfollow");
-      }
+  const handleRemoveContact = () => {
+    console.log(contact);
+    if (onRemoveConnection && user) {
+      contact.contact.forEach((contact) => {
+        if (contact.data.id === user.id) {
+          onRemoveConnection(contact.id);
+        }
+      });
     }
   };
 
@@ -245,7 +201,7 @@ export const ContactCard = ({
       style={{ margin: "10px" }}
       initial="hidden"
       animate="visible"
-      transition={{ duration: .3 }}
+      transition={{ duration: 0.3 }}
       variants={variants}
     >
       <Card style={style}>
@@ -295,72 +251,28 @@ export const ContactCard = ({
             >{`${localContact.name} ${localContact.surname}`}</h1>
           </div>
           {/* Actions */}
-
           <div className={styles.contactButtonContainer}>
-            {(relationship === "following" || relationship === "none") && (
+            {(relationship === "none" || relationship === "pending") && (
               <Button
                 onClick={onSendContactRequest}
-                text={pendingContactRequest ? "Pending" : "Follow"}
+                text={relationship === "pending" ? "Pending" : "Follow"}
                 iconStyle={{ fontSize: "2.6rem" }}
                 icon={<MdGroupAdd />}
                 loading={contactRequestLoading}
-                inactive={pendingContactRequest}
+                inactive={relationship === "pending"}
                 innerStyle={{ padding: "0 15px", width: "134px" }}
               />
             )}
-            {(relationship === "following" || relationship === "full") && user && (
-              <Dropdown
-                innerButtonStyle={{ padding: "0 15px", width: "118px" }}
-                text="Access"
-                loading={onChangeContactAccessLoading}
-                outsideToggle={accessDropdown}
-                icon={access === "friends" ? <MdOutlineFavorite /> : <MdWork />}
-              >
-                {access === "friends" && (
-                  <Button
-                    text="Work"
-                    innerStyle={{ padding: "0 15px" }}
-                    onClick={() =>
-                      handleChangeContactAccess(user.id, contact.id, "contacts")
-                    }
-                    icon={<MdWork />}
-                  />
-                )}
-                {access === "contacts" && (
-                  <Button
-                    text="Friends"
-                    innerStyle={{ padding: "0 15px" }}
-                    onClick={() =>
-                      handleChangeContactAccess(user.id, contact.id, "friends")
-                    }
-                    icon={<MdOutlineFavorite />}
-                  />
-                )}
-                <Button
-                  text="Public"
-                  innerStyle={{ padding: "0 15px" }}
-                  onClick={() =>
-                    handleRemoveContact(user.id, contact.id, "revoke_access")
-                  }
-                  icon={<MdPublic />}
-                  backgroundColor="var(--color-error)"
-                  loading={onRemoveConnectionLoadingRevoke}
-                />
-              </Dropdown>
+            {relationship === "full" && user && (
+              <Button
+                text="Unfollow"
+                innerStyle={{ padding: "0 15px", width: "134px" }}
+                onClick={() => handleRemoveContact()}
+                loading={onRemoveConnectionLoadingUnfollow}
+                icon={<MdGroupOff />}
+                backgroundColor="var(--color-grey)"
+              />
             )}
-            {(relationship === "follower" || relationship === "full") &&
-              user && (
-                <Button
-                  text="Unfollow"
-                  innerStyle={{ padding: "0 15px", width: "134px" }}
-                  onClick={() =>
-                    handleRemoveContact(contact.id, user.id, "unfollow")
-                  }
-                  loading={onRemoveConnectionLoadingUnfollow}
-                  icon={<MdGroupOff />}
-                  backgroundColor="var(--color-grey)"
-                />
-              )}
           </div>
           {/* Data */}
           <div>

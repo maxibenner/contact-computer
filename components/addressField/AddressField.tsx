@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState, useContext } from "react";
 import {
-  MdOutlineFavorite,
+  MdGroup,
   MdPublic,
   MdBusiness,
   MdEdit,
@@ -78,7 +78,7 @@ export const AddressField = ({
   useEffect(() => {
     if (newAccess === "public") setIcon(<MdPublic />);
     if (newAccess === "contacts") setIcon(<MdBusiness />);
-    if (newAccess === "friends") setIcon(<MdOutlineFavorite />);
+    if (newAccess === "friends") setIcon(<MdGroup />);
 
     // Make sure that new ones are write initially
     if (startEditing) setEditing(true);
@@ -207,16 +207,10 @@ export const AddressField = ({
               icon={<MdPublic />}
             />
           )}
-          {newAccess !== "contacts" && (
-            <Button
-              onClick={() => setNewAccess("contacts")}
-              icon={<MdBusiness />}
-            />
-          )}
           {newAccess !== "friends" && (
             <Button
               onClick={() => setNewAccess("friends")}
-              icon={<MdOutlineFavorite />}
+              icon={<MdGroup />}
             />
           )}
         </Dropdown>

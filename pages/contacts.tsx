@@ -26,11 +26,10 @@ export default function Contact() {
           ))}
           {profile?.contact.map((c) => (
             <ContactListElement
-              requests={profile.requests_received}
-              key={c.contact.id}
+              key={c.id}
               contact={c}
               onClick={() =>
-                Router.push(`/contact-page?u=${c.contact.id}&o=/contacts`)
+                Router.push(`/contact-page?u=${c.data.id}&o=/contacts`)
               }
             />
           ))}
