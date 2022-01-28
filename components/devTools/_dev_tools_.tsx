@@ -3,7 +3,6 @@ import { getUser } from "../../sdk/auth";
 export const _dev_tools_ = () => {
   const logUser = () => {
     const user = getUser();
-    console.log(user);
   };
 
   return (

@@ -1,9 +1,9 @@
-import { Card } from "../card/Card";
-import styles from "./landingPageItem_2.module.css";
-import Image from "next/image";
 import React from "react";
+import {
+  MdGroup, MdPublic
+} from "react-icons/md";
 import { Button } from "../button/Button";
-import { MdOutlineFavorite, MdPublic, MdBusiness } from "react-icons/md";
+import styles from "./landingPageItem_2.module.css";
 
 export const LandingPageItem_2 = () => {
   return (
@@ -12,21 +12,16 @@ export const LandingPageItem_2 = () => {
         <h2>We prioritize privacy</h2>
         <h1>Simple, strong Privacy Controls</h1>
         <p>
-          Stay on top of what you share by putting your contacts into groups.
+          Choose for each piece of information if it is public, or for contacts
+          only.
         </p>
       </div>
       <div className={styles.privacyContainer}>
         <Button
           style={{ width: "fit-content" }}
-          icon={<MdOutlineFavorite />}
+          icon={<MdGroup />}
           innerStyle={{ padding: "0 15px" }}
           text="Friends"
-        />
-        <Button
-          style={{ width: "fit-content", alignSelf: "center" }}
-          icon={<MdBusiness />}
-          innerStyle={{ padding: "0 15px" }}
-          text="Work"
         />
         <Button
           style={{ width: "fit-content", alignSelf: "flex-end" }}

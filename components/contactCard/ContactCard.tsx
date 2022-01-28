@@ -61,7 +61,6 @@ export const ContactCard = ({
   user?: User | null;
 }) => {
   const router = useRouter();
-  console.log("Contact Card")
 
   // Toggle add dropdown
   const [dropdownToggle, setDropdownToggle] = useState(false);
@@ -87,14 +86,12 @@ export const ContactCard = ({
 
   // Add new field to local data copy
   const handleAddData = (type: DataType) => {
-    console.log(user);
     if (user) {
       // Set to active editing
       setActiveEdit(true);
 
       // Create arbitrary id to facilitate cancel operation
       const randomId = (Math.random() * 99999999).toFixed(0) + "_local";
-      console.log(randomId);
 
       // Push cappropriate data
       if (type === "address") {
@@ -163,7 +160,6 @@ export const ContactCard = ({
   };
 
   const handleRemoveContact = () => {
-    console.log(contact);
     if (onRemoveConnection && user) {
       contact.contact.forEach((contact) => {
         if (contact.data.id === user.id) {

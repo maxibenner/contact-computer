@@ -23,9 +23,6 @@ const Home: NextPage = () => {
   const handleSearch = async (d: string) => {
     if (d.length > 3) {
       const { data, error } = await db_getContactSearchResult(d);
-      if (error) {
-        console.log(error);
-      }
       setContacts(data);
     }
   };

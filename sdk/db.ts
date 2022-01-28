@@ -24,7 +24,7 @@ export const db_getContact = async (id: string) => {
       error.code === "406" ||
       error.message === "JSON object requested, multiple (or no) rows returned"
     ) {
-      console.log("Not set up");
+      // Not set up
       return {
         data: data,
         error: { message: "Not set up" },
@@ -53,7 +53,6 @@ export const db_getContact = async (id: string) => {
       surname: data.surname,
       web: data.web,
     };
-    console.log(newData);
 
     return {
       data: newData,
@@ -110,7 +109,6 @@ export const db_acceptContactRequest = async (
     access: "friends",
   });
   if (connectionRes.error) {
-    console.log(connectionRes.error.message);
     return {
       data: null,
       error: {
@@ -128,7 +126,6 @@ export const db_acceptContactRequest = async (
       .single();
 
     if (error) {
-      console.log(error.message);
       return { data: null, error: { code: "400", message: error.message } };
     }
     return {
@@ -167,14 +164,12 @@ export const db_changeContactAcccess = async (
   contact_id: string,
   access: Access
 ) => {
-  console.log(access);
   const { data, error } = await supabase
     .from("connection")
     .update([{ access: access }])
     .eq("owner_id", owner_id)
     .eq("contact_id", contact_id);
 
-  console.log(data, error);
 };
 
 /**
@@ -193,7 +188,6 @@ export const db_removeConnection = async (id: number) => {
     .from("connection")
     .delete()
     .eq("id", id);
-  console.log(error);
 };
 
 /**
@@ -214,7 +208,6 @@ export const db_updateProfileImage = async (uid: string, image: File) => {
     .single();
 
   if (profileRes.error && !profileRes.data) {
-    console.log(profileRes.error);
     return { data: null, error: { message: "Problem reading user profile" } };
   }
 
@@ -223,7 +216,6 @@ export const db_updateProfileImage = async (uid: string, image: File) => {
     .remove([profileRes.data.img_src]);
 
   if (deleteRes.error && !deleteRes.data) {
-    console.log(deleteRes.error);
     return {
       data: null,
       error: { message: "Problem deleting old profile image" },
@@ -235,7 +227,6 @@ export const db_updateProfileImage = async (uid: string, image: File) => {
   const uploadRes = await supabase.storage.from("public").upload(path, image);
 
   if (uploadRes.error) {
-    console.log(uploadRes.error);
     return {
       data: null,
       error: { message: "Problem uploading new profile image" },
@@ -251,7 +242,6 @@ export const db_updateProfileImage = async (uid: string, image: File) => {
     .single();
 
   if (updateRes.error) {
-    console.log(updateRes.error);
     return {
       data: null,
       error: { message: "Problem update profile" },

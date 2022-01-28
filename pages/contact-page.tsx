@@ -48,7 +48,6 @@ export default function ContactPage() {
     if (profile && typeof profile.id === "string" && contact) {
       setContactRequestLoading(true);
       await sendContactRequest(contact.id);
-      console.log("3. Stopped animation");
       setContactRequestLoading(false);
     } else
       setNotification({

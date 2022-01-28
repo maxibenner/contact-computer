@@ -19,7 +19,6 @@ export const Search = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch && onSearch(value);
-    console.log(value);
   };
 
   return (

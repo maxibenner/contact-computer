@@ -101,9 +101,7 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
   const sendContactRequest = async (recipient_id: string) => {
     if (user) {
       await db_sendContactRequest(user.id, recipient_id);
-      console.log("1. Sent request");
       await reloadData();
-      console.log("2. Reloaded Data");
     }
   };
   const changeContactAccess = async (
