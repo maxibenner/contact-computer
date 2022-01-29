@@ -109,6 +109,7 @@ export const db_acceptContactRequest = async (
     access: "friends",
   });
   if (connectionRes.error) {
+    console.log(connectionRes.error);
     return {
       data: null,
       error: {
@@ -126,7 +127,7 @@ export const db_acceptContactRequest = async (
       .single();
 
     if (error) {
-      console.log(error)
+      console.log(error);
       return { data: null, error: { code: "400", message: error.message } };
     }
     return {
@@ -170,7 +171,6 @@ export const db_changeContactAcccess = async (
     .update([{ access: access }])
     .eq("owner_id", owner_id)
     .eq("contact_id", contact_id);
-
 };
 
 /**
