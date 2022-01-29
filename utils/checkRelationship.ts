@@ -24,10 +24,18 @@ export const checkRelationship = (
       }
     }
 
-    // Check for pending requests
+    // Check for pending outgoing requests
     for (let i = 0; i < profile.requests_sent.length; i++) {
       if (profile.requests_sent[i].recipient_id === contact_id) {
-        relationship = "pending";
+        relationship = "request sent";
+        break;
+      }
+    }
+
+    // Check for pending incoming requests
+    for (let i = 0; i < profile.requests_received.length; i++) {
+      if (profile.requests_received[i].recipient_id === profile.id) {
+        relationship = "request received";
         break;
       }
     }

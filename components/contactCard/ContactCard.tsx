@@ -244,14 +244,22 @@ export const ContactCard = ({
           </div>
           {/* Actions */}
           <div className={styles.contactButtonContainer}>
-            {(relationship === "none" || relationship === "pending") && (
+            {relationship !== "full" && (
               <Button
                 onClick={onSendContactRequest}
-                text={relationship === "pending" ? "Pending" : "Follow"}
+                text={
+                  relationship === "request sent" ||
+                  relationship === "request received"
+                    ? "Pending"
+                    : "Follow"
+                }
                 iconStyle={{ fontSize: "2.6rem" }}
                 icon={<MdGroupAdd />}
                 loading={contactRequestLoading}
-                inactive={relationship === "pending"}
+                inactive={
+                  relationship === "request sent" ||
+                  relationship === "request received"
+                }
                 innerStyle={{ padding: "0 15px", width: "134px" }}
               />
             )}

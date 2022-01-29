@@ -326,9 +326,8 @@ export type TransformedConnectionType = {
 export type DataType = "phone" | "email" | "web" | "address";
 export type Relationship =
   | "full"
-  | "follower"
-  | "following"
-  | "pending"
+  | "request received"
+  | "request sent"
   | "none"
   | "self"
   | undefined;
