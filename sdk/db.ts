@@ -126,6 +126,7 @@ export const db_acceptContactRequest = async (
       .single();
 
     if (error) {
+      console.log(error)
       return { data: null, error: { code: "400", message: error.message } };
     }
     return {

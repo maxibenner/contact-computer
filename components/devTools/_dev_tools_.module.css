@@ -1,0 +1,18 @@
+.container {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  padding: 15px;
+  min-height: 100px;
+  background-color: var(--color-main);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+.actionContainer {
+  background-color: rgb(60, 68, 224);
+  padding: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+}
