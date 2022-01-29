@@ -13,7 +13,7 @@ export const db_getContact = async (id: string) => {
   const { data, error } = await supabase
     .from("profile")
     .select(
-      "id, name, surname, img_src, phone (*), email (*), web(*), address(*), requests_received:request!recipient_id(*,owner:owner_id(*)),requests_sent:request!owner_id(*,owner:owner_id(*)), contact_o:connection!owner_id(data:contact_id(*), id), contact_r:connection!contact_id(data:owner_id(*), id)"
+      "id, name, surname, img_src, phone (*), email (*), web(*), address(*), requests_received:request!recipient_id(*,owner:sender_id(*)),requests_sent:request!sender_id(*,owner:sender_id(*)), contact_o:connection!owner_id(data:contact_id(*), id), contact_r:connection!contact_id(data:owner_id(*), id)"
     )
     .eq("id", id)
     .limit(1)
@@ -76,7 +76,9 @@ export const db_saveContactInfo = async ({
   if (typeof data.id === "string") {
     if (data.id.includes("local")) data.id = undefined;
   }
-  return await supabase.from(type).upsert([data]);
+  const saveRes = await supabase.from(type).upsert([data]);
+  if (saveRes.error) console.log(saveRes.error);
+  return { data: saveRes.data, error: saveRes.error };
 };
 
 // DELETE
@@ -84,10 +86,17 @@ export const db_deleteContactInfo = async (data_id: number, type: DataType) =>
   await supabase.from(type).delete().eq("id", data_id);
 
 // SEND CONTACT REQUEST
-export const db_sendContactRequest = (owner_id: string, recipient_id: string) =>
-  supabase
+export const db_sendContactRequest = async (
+  owner_id: string,
+  recipient_id: string
+) => {
+  const { data, error } = await supabase
     .from("request")
-    .insert([{ owner_id: owner_id, recipient_id: recipient_id }]);
+    .insert([{ sender_id: owner_id, recipient_id: recipient_id }]);
+
+  if (error) console.log(error);
+  return { data, error };
+};
 
 /**
  * Accept contact request
@@ -105,8 +114,7 @@ export const db_acceptContactRequest = async (
   // Add connection
   const connectionRes = await supabase.from("connection").insert({
     owner_id: recipient_id,
-    contact_id: owner_id,
-    access: "friends",
+    contact_id: owner_id
   });
   if (connectionRes.error) {
     console.log(connectionRes.error);
@@ -159,16 +167,16 @@ export const db_declineContactRequest = async (id: number) => {
  *
  * @param owner_id - Uid of user
  * @param contact_id - Uid of contact
- * @param access - New access type
+ * @param is_private - New access type
  */
 export const db_changeContactAcccess = async (
   owner_id: string,
   contact_id: string,
-  access: Access
+  is_private: boolean
 ) => {
   const { data, error } = await supabase
     .from("connection")
-    .update([{ access: access }])
+    .update([{ is_private: is_private }])
     .eq("owner_id", owner_id)
     .eq("contact_id", contact_id);
 };
@@ -180,9 +188,7 @@ export const db_changeContactAcccess = async (
  * - User needs to be authenticated
  * - User needs to be either owner or contact of the connection
  *
- * @param owner_id - Uid of user
- * @param contact_id - Uid of contact
- * @param access - New access type
+ * @param id - Id of connection
  */
 export const db_removeConnection = async (id: number) => {
   const { data, error } = await supabase
@@ -269,13 +275,13 @@ export type SingleLineData = {
   id: number | string | undefined | null;
   label: string;
   value: string;
-  access: Access;
+  is_private: boolean;
   owner_id: string;
 };
 export type AddressData = {
   id: number | string | undefined | null;
   label: string;
-  access: Access;
+  is_private: boolean;
   street: string;
   city: string;
   state: string;
@@ -306,7 +312,7 @@ export type Connection = {
     surname: string;
     img_src: string;
   };
-  access: Access;
+  is_private: boolean;
 };
 export type TransformedConnectionType = {
   data: {
@@ -318,7 +324,6 @@ export type TransformedConnectionType = {
   id: number;
 };
 export type DataType = "phone" | "email" | "web" | "address";
-export type Access = "public" | "contacts" | "friends";
 export type Relationship =
   | "full"
   | "follower"

@@ -1,7 +1,6 @@
 import { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
-  Access,
   AddressData,
   DataType,
   db_acceptContactRequest,
@@ -10,12 +9,10 @@ import {
   db_getContact,
   db_saveContactInfo,
   db_sendContactRequest,
-  db_changeContactAcccess,
   db_removeConnection,
   db_updateProfileImage,
   ContactType,
   SingleLineData,
-  Request,
 } from "../sdk/db";
 import { AuthContext } from "./AuthContext";
 import { useRouter } from "next/router";
@@ -31,11 +28,6 @@ export const ProfileContext = createContext<{
     type: DataType
   ) => Promise<void>;
   deleteContactInfo: (data_id: number, type: DataType) => Promise<void>;
-  changeContactAccess: (
-    owner_id: string,
-    contact_id: string,
-    access: Access
-  ) => Promise<void>;
   removeConnection: (id: number) => Promise<void>;
   updateProfileImage: (file: File) => Promise<void>;
   reloadData: () => Promise<void>;
@@ -104,14 +96,7 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
       await reloadData();
     }
   };
-  const changeContactAccess = async (
-    owner_id: string,
-    contact_id: string,
-    access: Access
-  ) => {
-    await db_changeContactAcccess(owner_id, contact_id, access);
-    await reloadData();
-  };
+
   const removeConnection = async (id: number) => {
     await db_removeConnection(id);
     await reloadData();
@@ -142,7 +127,6 @@ export const ProfileWrapper = ({ children }: { children: JSX.Element }) => {
         saveContactInfo,
         deleteContactInfo,
         sendContactRequest,
-        changeContactAccess,
         removeConnection,
         reloadData,
         updateProfileImage,

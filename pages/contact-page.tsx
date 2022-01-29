@@ -5,7 +5,7 @@ import { ContactCard } from "../components/contactCard/ContactCard";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/NotificationContext";
 import { ProfileContext } from "../context/ProfileContext";
-import { Access, ContactType, db_getContact, Relationship } from "../sdk/db";
+import { ContactType, db_getContact, Relationship } from "../sdk/db";
 import styles from "../styles/Home.module.css";
 import { checkRelationship } from "../utils/checkRelationship";
 
@@ -17,7 +17,7 @@ export default function ContactPage() {
 
   // User & profile functions
   const user = useContext(AuthContext);
-  const { profile, sendContactRequest, changeContactAccess, removeConnection } =
+  const { profile, sendContactRequest, removeConnection } =
     useContext(ProfileContext);
 
   // Get contact from query

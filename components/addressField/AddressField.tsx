@@ -8,7 +8,7 @@ import {
   MdDelete,
   MdAdd,
 } from "react-icons/md";
-import { Access, AddressData } from "../../sdk/db";
+import { AddressData } from "../../sdk/db";
 import { Button } from "../button/Button";
 import { InputTextBasic } from "../inputTextBasic/InputTextBasic";
 import styles from "./addressField.module.css";
@@ -20,7 +20,7 @@ export const AddressField = ({
   data: {
     id,
     label,
-    access,
+    is_private,
     street,
     city,
     state,
@@ -70,19 +70,16 @@ export const AddressField = ({
   const [newPostal, setNewPostal] = useState(postal);
   const [newState, setNewState] = useState(state);
   const [newCountry, setNewCountry] = useState(country);
-  const [newAccess, setNewAccess] = useState<"public" | "contacts" | "friends">(
-    access
-  );
+  const [newIsPrivate, setNewIsPrivate] = useState<boolean>(is_private);
 
   // Adjust icon and make sure that new elements start in write mode
   useEffect(() => {
-    if (newAccess === "public") setIcon(<MdPublic />);
-    if (newAccess === "contacts") setIcon(<MdBusiness />);
-    if (newAccess === "friends") setIcon(<MdGroup />);
+    if (!newIsPrivate) setIcon(<MdPublic />);
+    if (newIsPrivate) setIcon(<MdGroup />);
 
     // Make sure that new ones are write initially
     if (startEditing) setEditing(true);
-  }, [access, newAccess]);
+  }, [is_private, newIsPrivate]);
 
   // Submit data to parent
   const handleSave = async () => {
@@ -96,7 +93,7 @@ export const AddressField = ({
         postal: newPostal,
         state: newState,
         country: newCountry,
-        access: newAccess,
+        is_private: newIsPrivate,
         owner_id: owner_id,
       },
       "address"
@@ -135,7 +132,7 @@ export const AddressField = ({
       postal === newPostal &&
       state === newState &&
       country === newCountry &&
-      access === newAccess
+      is_private === newIsPrivate
     ) {
       setHasChanged(false);
     } else setHasChanged(true);
@@ -146,11 +143,11 @@ export const AddressField = ({
     newPostal,
     newState,
     newCountry,
-    newAccess,
+    newIsPrivate,
   ]);
   useEffect(() => {
     setAccessOutsideToggle((prev) => !prev);
-  }, [newAccess]);
+  }, [newIsPrivate]);
 
   return editing ? (
     /* Writing */
@@ -201,17 +198,14 @@ export const AddressField = ({
           noVisualChange
           outsideToggle={accessOutsideToggle}
         >
-          {newAccess !== "public" && (
+          {newIsPrivate && (
             <Button
-              onClick={() => setNewAccess("public")}
+              onClick={() => setNewIsPrivate(false)}
               icon={<MdPublic />}
             />
           )}
-          {newAccess !== "friends" && (
-            <Button
-              onClick={() => setNewAccess("friends")}
-              icon={<MdGroup />}
-            />
+          {!newIsPrivate && (
+            <Button onClick={() => setNewIsPrivate(true)} icon={<MdGroup />} />
           )}
         </Dropdown>
         <Button

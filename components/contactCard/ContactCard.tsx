@@ -22,7 +22,6 @@ import {
 } from "react-icons/md";
 import { ProfileContext } from "../../context/ProfileContext";
 import {
-  Access,
   AddressData,
   ContactType,
   DataType,
@@ -102,7 +101,7 @@ export const ContactCard = ({
             {
               id: randomId,
               label: "",
-              access: "friends",
+              is_private: true,
               street: "",
               city: "",
               state: "",
@@ -122,7 +121,7 @@ export const ContactCard = ({
               id: randomId,
               label: "",
               value: "",
-              access: "friends",
+              is_private: true,
               startEditing: true,
               owner_id: user.id,
             },

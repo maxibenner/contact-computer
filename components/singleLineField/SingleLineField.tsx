@@ -19,12 +19,12 @@ import { ProfileContext } from "../../context/ProfileContext";
  * An element displaying user data
  * @param label The name of the data point
  * @param value The data
- * @param access The access level of the data
+ * @param is_private The access level of the data
  * @param editing Switches between static and editor display mode
  * @param startEditing Pass true to start in editing mode
  */
 export const SingleLineField = ({
-  data: { id, owner_id, label, value, access, startEditing },
+  data: { id, owner_id, label, value, is_private, startEditing },
   onCancel,
   onSubmitEnd,
   editable,
@@ -61,9 +61,7 @@ export const SingleLineField = ({
 
   const [newLabel, setNewLabel] = useState<string>(label);
   const [newValue, setNewValue] = useState<string>(value);
-  const [newAccess, setNewAccess] = useState<"public" | "contacts" | "friends">(
-    access
-  );
+  const [newIsPrivate, setNewIsPrivate] = useState<boolean>(is_private);
 
   // Load and reload values
   useEffect(() => {
@@ -73,9 +71,8 @@ export const SingleLineField = ({
 
   // Change icons
   useEffect(() => {
-    if (newAccess === "public") setIcon(<MdPublic />);
-    if (newAccess === "contacts") setIcon(<MdGroup />);
-    if (newAccess === "friends") setIcon(<MdGroup />);
+    if (!newIsPrivate) setIcon(<MdPublic />);
+    if (newIsPrivate) setIcon(<MdGroup />);
 
     if (type === "phone") setPlaceholder("Phone number");
     if (type === "web") setPlaceholder("Website address");
@@ -83,7 +80,7 @@ export const SingleLineField = ({
 
     // Make sure that new ones are write initially
     if (startEditing) setEditing(true);
-  }, [access, newAccess]);
+  }, [is_private, newIsPrivate]);
 
   // Submit data
   const handleSave = async () => {
@@ -93,7 +90,7 @@ export const SingleLineField = ({
         id: id,
         label: newLabel,
         value: newValue,
-        access: newAccess,
+        is_private: newIsPrivate,
         owner_id: owner_id,
       },
       type
@@ -126,27 +123,27 @@ export const SingleLineField = ({
   // Handle input changes
   const handleLabelChange = (v: string) => {
     setNewLabel(v);
-    if (label === v && value === newValue && access === newAccess) {
+    if (label === v && value === newValue && is_private === newIsPrivate) {
       setHasChanged(false);
     } else setHasChanged(true);
   };
   const handleValueChange = (v: string) => {
     setNewValue(v);
-    if (value === v && label === newLabel && access === newAccess) {
+    if (value === v && label === newLabel && is_private === newIsPrivate) {
       setHasChanged(false);
     } else setHasChanged(true);
   };
   // Handle access change
-  const handleAccessChange = (v: "public" | "friends" | "contacts") => {
-    setNewAccess(v);
+  const handleAccessChange = (v: boolean) => {
+    setNewIsPrivate(v);
 
     // Check has changed
-    if (value === newValue && label === newLabel && access === v) {
+    if (value === newValue && label === newLabel && is_private === v) {
       setHasChanged(false);
     } else setHasChanged(true);
 
     // Close menu
-    if (access === newAccess) setAccessOutsideToggle((prev) => !prev);
+    if (is_private === newIsPrivate) setAccessOutsideToggle((prev) => !prev);
   };
 
   return editing ? (
@@ -174,15 +171,15 @@ export const SingleLineField = ({
           noVisualChange
           outsideToggle={accessOutsideToggle}
         >
-          {newAccess !== "public" && (
+          {newIsPrivate && (
             <Button
-              onClick={() => handleAccessChange("public")}
+              onClick={() => handleAccessChange(false)}
               icon={<MdPublic />}
             />
           )}
-          {newAccess !== "friends" && (
+          {!newIsPrivate && (
             <Button
-              onClick={() => handleAccessChange("friends")}
+              onClick={() => handleAccessChange(true)}
               icon={<MdGroup />}
             />
           )}

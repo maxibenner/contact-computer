@@ -28,7 +28,7 @@ export const _dev_tools_ = () => {
       const { data, error } = await supabase.from("connection").insert({
         owner_id: event.target.recipient_id.value,
         contact_id: user.id,
-        access: "friends",
+        is_private: true,
       });
 
       if (error) console.log(error);
