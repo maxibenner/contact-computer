@@ -1,17 +1,14 @@
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useContext, useState } from "react";
 import {
   MdCheck,
-  MdOutlineClose,
-  MdOutlineFavorite,
-  MdBusiness,
+  MdOutlineClose
 } from "react-icons/md";
 import { ProfileContext } from "../../context/ProfileContext";
 import { Request } from "../../sdk/db";
 import { Button } from "../button/Button";
-import { Dropdown } from "../dropdown/Dropdown";
 import styles from "./requestListElement.module.css";
-import { useRouter } from "next/router";
 
 export const RequestListElement = ({ data }: { data: Request }) => {
   const router = useRouter();
