@@ -7,7 +7,7 @@ import {
   MdBusiness,
 } from "react-icons/md";
 import { ProfileContext } from "../../context/ProfileContext";
-import { Access, Request } from "../../sdk/db";
+import { Request } from "../../sdk/db";
 import { Button } from "../button/Button";
 import { Dropdown } from "../dropdown/Dropdown";
 import styles from "./requestListElement.module.css";

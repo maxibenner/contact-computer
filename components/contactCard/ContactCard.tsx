@@ -64,9 +64,6 @@ export const ContactCard = ({
   // Toggle add dropdown
   const [dropdownToggle, setDropdownToggle] = useState(false);
 
-  // Access toggle
-  const [accessDropdown, setAccessDropdown] = useState(false);
-
   // Context for profile image change
   const imgInputRef = useRef<HTMLInputElement>();
 
