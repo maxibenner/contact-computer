@@ -26,11 +26,11 @@ export const LandingPageItem_1 = () => {
         </div>
       </Card>
       <div className={styles.textContainer}>
-        <h2>Keep everyone in the loop</h2>
-        <h1>
-          Your Contact Info <u>safe</u> on the web
-        </h1>
-        <p>Fill out your personal card to help your contacts stay in touch.</p>
+        <h2>Keep your contacts in the loop</h2>
+        <h1>No outdated contact info ever again</h1>
+        <p style={{ lineHeight: "3rem" }}>
+          Create your personal contact-card to help people stay in touch.
+        </p>
       </div>
     </div>
   );
