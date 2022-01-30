@@ -8,9 +8,9 @@ export const LandingPageItem_3 = () => {
   return (
     <div className={styles.container}>
       <h1>Join now</h1>
-      <p>
-        Set up your central identity on the web and start connecting with
-        others.
+      <p style={{ lineHeight: "3rem" }}>
+        Set up your central identity on the web and never loose touch with your
+        contacts.
       </p>
       <Button
         onClick={() => router.push("/signup")}
