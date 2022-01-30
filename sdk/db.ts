@@ -111,6 +111,7 @@ export const db_acceptContactRequest = async (
   recipient_id: string,
   owner_id: string
 ) => {
+  console.log(recipient_id)
   // Add connection
   const connectionRes = await supabase.from("connection").insert({
     owner_id: recipient_id,

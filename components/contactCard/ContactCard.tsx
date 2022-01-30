@@ -1,7 +1,7 @@
 import { User } from "@supabase/supabase-js";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { motion } from "framer-motion";
 import {
   ChangeEvent,
   CSSProperties,
@@ -16,9 +16,6 @@ import {
   MdGroupAdd,
   MdGroupOff,
   MdOutlineClose,
-  MdOutlineFavorite,
-  MdPublic,
-  MdWork,
 } from "react-icons/md";
 import { ProfileContext } from "../../context/ProfileContext";
 import {
@@ -36,7 +33,6 @@ import { NoDataPlaceholder } from "../noDataPlaceholder/NoDataPlaceholder";
 import { SingleLineField } from "../singleLineField/SingleLineField";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./contactCard.module.css";
-import { checkRelationship } from "../../utils/checkRelationship";
 
 export const ContactCard = ({
   contact,
@@ -60,6 +56,10 @@ export const ContactCard = ({
   user?: User | null;
 }) => {
   const router = useRouter();
+
+  useEffect(() => {
+    console.log(relationship);
+  }, [relationship]);
 
   // Toggle add dropdown
   const [dropdownToggle, setDropdownToggle] = useState(false);
@@ -244,34 +244,38 @@ export const ContactCard = ({
           </div>
           {/* Actions */}
           <div className={styles.contactButtonContainer}>
-            {relationship !== "full" && (
-              <Button
-                onClick={onSendContactRequest}
-                text={
-                  relationship === "request sent" ||
-                  relationship === "request received"
-                    ? "Pending"
-                    : "Follow"
-                }
-                iconStyle={{ fontSize: "2.6rem" }}
-                icon={<MdGroupAdd />}
-                loading={contactRequestLoading}
-                inactive={
-                  relationship === "request sent" ||
-                  relationship === "request received"
-                }
-                innerStyle={{ padding: "0 15px", width: "134px" }}
-              />
-            )}
-            {relationship === "full" && user && (
-              <Button
-                text="Unfollow"
-                innerStyle={{ padding: "0 15px", width: "134px" }}
-                onClick={() => handleRemoveContact()}
-                loading={onRemoveConnectionLoadingUnfollow}
-                icon={<MdGroupOff />}
-                backgroundColor="var(--color-grey)"
-              />
+            {relationship === "self" ? null : (
+              <>
+                {relationship !== "full" && (
+                  <Button
+                    onClick={onSendContactRequest}
+                    text={
+                      relationship === "request sent" ||
+                      relationship === "request received"
+                        ? "Pending"
+                        : "Follow"
+                    }
+                    iconStyle={{ fontSize: "2.6rem" }}
+                    icon={<MdGroupAdd />}
+                    loading={contactRequestLoading}
+                    inactive={
+                      relationship === "request sent" ||
+                      relationship === "request received"
+                    }
+                    innerStyle={{ padding: "0 15px", width: "134px" }}
+                  />
+                )}
+                {relationship === "full" && user && (
+                  <Button
+                    text="Unfollow"
+                    innerStyle={{ padding: "0 15px", width: "134px" }}
+                    onClick={() => handleRemoveContact()}
+                    loading={onRemoveConnectionLoadingUnfollow}
+                    icon={<MdGroupOff />}
+                    backgroundColor="var(--color-grey)"
+                  />
+                )}
+              </>
             )}
           </div>
           {/* Data */}
