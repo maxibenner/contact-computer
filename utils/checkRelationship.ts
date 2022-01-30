@@ -34,7 +34,10 @@ export const checkRelationship = (
 
     // Check for pending incoming requests
     for (let i = 0; i < profile.requests_received.length; i++) {
-      if (profile.requests_received[i].recipient_id === profile.id) {
+      if (
+        profile.requests_received[i].recipient_id === profile.id &&
+        profile.requests_received[i].sender_id === contact_id
+      ) {
         relationship = "request received";
         break;
       }

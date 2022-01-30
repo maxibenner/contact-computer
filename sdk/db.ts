@@ -299,6 +299,7 @@ export type Request = {
     img_src: string;
   };
   recipient_id: string;
+  sender_id: string;
 };
 export type Connection = {
   owner: {
