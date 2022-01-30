@@ -3,6 +3,7 @@ import { Button } from "../button/Button";
 import { Radio } from "../radio/Radio";
 import { useState, useContext } from "react";
 import { NotificationContext } from "../../context/NotificationContext";
+import { motion } from "framer-motion";
 
 export const SpeechBubble = ({
   title,
@@ -20,10 +21,20 @@ export const SpeechBubble = ({
   const [notification, setNotification, doNotShowAgain, setDoNotShowAgain] =
     useContext(NotificationContext);
 
+  /* ANIMATION */
+  const variants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   if (description) {
     return (
-      <div
+      <motion.div
         className={type === "error" ? styles.containerError : styles.container}
+        initial="hidden"
+        animate="visible"
+        // transition={{ duration: 0.3 }}
+        variants={variants}
       >
         <h3 className={styles.title}>{title}</h3>
         <p className={styles.description}>{description}</p>
@@ -50,7 +61,7 @@ export const SpeechBubble = ({
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
     );
   } else return null;
 };
