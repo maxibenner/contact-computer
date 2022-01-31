@@ -13,6 +13,7 @@ import { AuthContext } from "../context/AuthContext";
 import { LandingPageItem_1 } from "../components/landingPageItem_1/LandingPageItem_1";
 import { LandingPageItem_2 } from "../components/landingPageItem_2/LandingPageItem_2";
 import { LandingPageItem_3 } from "../components/landingPageItem_3/LandingPageItem_3";
+import { LandingPageItem_4 } from "../components/landingPageItem_4/LandingPageItem_4";
 
 const Home: NextPage = () => {
   const [contacts, setContacts] = useState<any>([]);
@@ -69,6 +70,9 @@ const Home: NextPage = () => {
         </div>
         <div className={localStyles.containerItem}>
           <LandingPageItem_2 />
+        </div>
+        <div className={localStyles.containerItem}>
+          <LandingPageItem_4 />
         </div>
         <div
           className={localStyles.containerItem}

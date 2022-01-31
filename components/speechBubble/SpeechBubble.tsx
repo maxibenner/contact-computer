@@ -33,7 +33,6 @@ export const SpeechBubble = ({
         className={type === "error" ? styles.containerError : styles.container}
         initial="hidden"
         animate="visible"
-        // transition={{ duration: 0.3 }}
         variants={variants}
       >
         <h3 className={styles.title}>{title}</h3>

@@ -1,0 +1,80 @@
+.container {
+  display: flex;
+  color: white;
+  gap: 100px;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 110px 120px rgba(0, 0, 0, 0.3);
+}
+
+/* IMAGE */
+.cardInner {
+  padding: 30px;
+  color: black;
+  display: flex;
+  gap: 16px;
+  background: #fff;
+  padding-bottom: 50px;
+}
+.imageContainer {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  border: 2px solid black;
+  background: black;
+}
+.cardInfoContainer {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  color: black;
+  min-height: 100px;
+}
+.lockBg {
+  margin-top: -25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(232, 233, 252);
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  font-size: 2.5rem;
+  color: var(--color-main);
+}
+
+/* TEXT */
+.textContainer {
+  max-width: 350px;
+}
+.textContainer > h1 {
+  font-size: 3.5rem;
+  color: white;
+}
+.textContainer > h2 {
+  font-size: 2rem;
+  background-clip: text;
+  color: transparent;
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgb(14, 115, 204),
+    rgb(98, 75, 187),
+    rgb(243, 88, 21),
+    rgb(254, 213, 74)
+  );
+}
+.textContainer > p {
+  font-size: 2.2rem;
+  color: #d0d3d7;
+}
+
+@media (max-width: 800px) {
+  .container {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 0;
+  }
+  .textContainer {
+    margin-bottom: 50px;
+  }
+}

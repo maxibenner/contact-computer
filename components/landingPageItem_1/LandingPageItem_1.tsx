@@ -27,7 +27,7 @@ export const LandingPageItem_1 = () => {
       </Card>
       <div className={styles.textContainer}>
         <h2>Keep your contacts in the loop</h2>
-        <h1>No outdated contact info ever again</h1>
+        <h1>No outdated contact info ever</h1>
         <p style={{ lineHeight: "3rem" }}>
           Create your personal contact-card to help people stay in touch.
         </p>
