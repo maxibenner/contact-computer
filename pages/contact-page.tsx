@@ -34,6 +34,18 @@ export default function ContactPage() {
     }
   }, [user, router]);
 
+  // Info
+  useEffect(() => {
+    setNotification({
+      title: "You found someone",
+      description:
+        "At first, you can only see people's public information. You can follow them to request access to their private profile.",
+      type: "info",
+      buttonText: "Sounds good",
+      doNotShowAgainId: "intro_2",
+    });
+  }, []);
+
   // Check for relationship between authenticated user and contact
   const [relationship, setRelationship] = useState<Relationship>(undefined);
   useEffect(() => {
