@@ -11,6 +11,7 @@ import { signIn } from "../sdk/auth";
 import { NotificationContext } from "../context/NotificationContext";
 import { Spinner } from "../components/spinner/Spinner";
 import Router from "next/router";
+import { sendPasswordReset } from "../sdk/db";
 
 const SignIn: NextPage = () => {
   const [password, onChangePassword] = useState("");
@@ -24,6 +25,7 @@ const SignIn: NextPage = () => {
 
     // Sign in
     signIn(email, password).then(({ error, session, user }) => {
+      console.log(error);
       if (error) {
         setItsLoading(false);
         if (
@@ -62,6 +64,21 @@ const SignIn: NextPage = () => {
         }
       } else Router.push("/");
     });
+  };
+
+  const handlePasswordReset = async () => {
+    if (email) {
+      sendPasswordReset(email);
+      Router.push("/waiting-for-reset-email", { query: { e: email } });
+    } else {
+      setNotification({
+        title: "Error",
+        description:
+          "Please enter an email address before requesting a password reset.",
+        type: "error",
+        buttonText: "Ok",
+      });
+    }
   };
 
   return (
@@ -103,9 +120,20 @@ const SignIn: NextPage = () => {
               value={password}
               type="password"
               label="Password"
-              style={{ marginBottom: "30px" }}
               onChange={onChangePassword}
             />
+            <p
+              onClick={handlePasswordReset}
+              style={{
+                width: "fit-content",
+                cursor: "pointer",
+                margin: "5px 0 30px auto",
+                color: "var(--color-main)",
+                fontSize: "1.5rem",
+              }}
+            >
+              Reset password
+            </p>
             <Button
               tabindex={0}
               icon={isLoading && <Spinner />}

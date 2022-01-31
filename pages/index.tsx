@@ -7,17 +7,20 @@ import { Search } from "../components/search/Search";
 import { ContactSearchResults } from "../components/contactSearchResults/ContactSearchResults";
 import { ContactType } from "../sdk/db";
 import { db_getContactSearchResult } from "../sdk/db";
-import Router from "next/router";
 import { NotificationContext } from "../context/NotificationContext";
 import { AuthContext } from "../context/AuthContext";
 import { LandingPageItem_1 } from "../components/landingPageItem_1/LandingPageItem_1";
 import { LandingPageItem_2 } from "../components/landingPageItem_2/LandingPageItem_2";
 import { LandingPageItem_3 } from "../components/landingPageItem_3/LandingPageItem_3";
 import { LandingPageItem_4 } from "../components/landingPageItem_4/LandingPageItem_4";
+import { useRouter } from "next/router";
+import { Router } from "next/router";
+import { GetServerSideProps } from "next";
 
 const Home: NextPage = () => {
   const [contacts, setContacts] = useState<any>([]);
   const user = useContext(AuthContext);
+  const router = useRouter();
 
   const [notification, setNotification] = useContext(NotificationContext);
 
@@ -32,8 +35,8 @@ const Home: NextPage = () => {
     setContacts([]);
 
     // Send user to profile on self-select, otherwise, send to contact-page
-    if (user && user.id === contact.id) Router.push(`/profile`);
-    else Router.push(`/contact-page?u=${contact.id}&o=/`);
+    if (user && user.id === contact.id) router.push(`/profile`);
+    else router.push(`/contact-page?u=${contact.id}&o=/`);
   };
 
   // Give info to user
@@ -47,6 +50,24 @@ const Home: NextPage = () => {
       doNotShowAgainId: "intro_1",
     });
   }, []);
+
+  // Check for password reset
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    const split = hash.split("&");
+
+    for (let i = 0; i < split.length; i++) {
+      if (split[i].includes("token")) {
+        const tokenSplit = split[i].split("=");
+        const token = tokenSplit[1];
+        console.log(token);
+
+        router.push("/password-reset", { query: { token: token } });
+      }
+    }
+  }, [router.isReady]);
 
   return (
     <>
