@@ -7,7 +7,7 @@ export const LandingPageItem_2 = () => {
   return (
     <div className={styles.container}>
       <div className={styles.textContainer}>
-        <h2>Keep your information safe</h2>
+        <h2>Keep your information private</h2>
         <h1>Simple, strong privacy controls</h1>
         <p style={{lineHeight: "3rem"}}>
           All your information is private by default. You decide who gets
