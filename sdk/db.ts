@@ -7,6 +7,30 @@ export const db_getContactSearchResult = async (query: string) => {
   });
 };
 
+// Reset password
+export const sendPasswordReset = async (email: string) => {
+  const { data, error } = await supabase.auth.api.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_DOMAIN}/passwort-reset`,
+  });
+
+  return {
+    data: error ? null : "Success",
+    error: error ? error : null,
+  };
+};
+
+// Reset password
+export const updatePassword = async (password: string, accessToken: string) => {
+  const { data, error } = await supabase.auth.api.updateUser(accessToken, {
+    password: password,
+  });
+
+  return {
+    data: data ? null : data,
+    error: error ? error : null,
+  };
+};
+
 // GET CONTACT
 export const db_getContact = async (id: string) => {
   // Get profile with scrambled connections
@@ -111,11 +135,11 @@ export const db_acceptContactRequest = async (
   recipient_id: string,
   owner_id: string
 ) => {
-  console.log(recipient_id)
+  console.log(recipient_id);
   // Add connection
   const connectionRes = await supabase.from("connection").insert({
     owner_id: recipient_id,
-    contact_id: owner_id
+    contact_id: owner_id,
   });
   if (connectionRes.error) {
     console.log(connectionRes.error);

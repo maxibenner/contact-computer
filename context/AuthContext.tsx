@@ -39,7 +39,6 @@ export const AuthWrapper = ({ children }: { children: JSX.Element }) => {
         Router.push("/");
       }
     });
-
     return () => authListener?.unsubscribe();
   }, []);
 
