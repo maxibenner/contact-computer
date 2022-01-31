@@ -1,7 +1,7 @@
 import styles from "./speechBubble.module.css";
 import { Button } from "../button/Button";
 import { Radio } from "../radio/Radio";
-import { useState, useContext } from "react";
+import { useState, useContext, ReactElement } from "react";
 import { NotificationContext } from "../../context/NotificationContext";
 import { motion } from "framer-motion";
 
@@ -13,7 +13,7 @@ export const SpeechBubble = ({
   onClick,
 }: {
   title: string;
-  description: string;
+  description: string | ReactElement;
   type: "error" | "info";
   buttonText?: string | undefined;
   onClick?: () => void | undefined;
@@ -38,7 +38,7 @@ export const SpeechBubble = ({
         <h3 className={styles.title}>{title}</h3>
         <p className={styles.description}>{description}</p>
         <div className={styles.interactivesContainer}>
-          {buttonText && onClick && (
+          {buttonText &&  (
             <Button
               onClick={onClick}
               backgroundColor={

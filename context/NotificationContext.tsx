@@ -1,8 +1,8 @@
-import { createContext, useState } from "react";
+import { createContext, ReactElement, useState } from "react";
 
 export type Notification = {
   title: string;
-  description: string;
+  description: string | ReactElement;
   type: "error" | "info";
   buttonText?: string;
   doNotShowAgainId?: string;
@@ -29,7 +29,7 @@ export const NotificationWrapper = ({
   // Toggle doNotShowAgain
   const setDoNotShowAgain = () => setDoNotShowAgain_internal((prev) => !prev);
 
-  // Choose between request and cacnel notification
+  // Choose between request and cancel notification
   const setNotification = (data: Notification | null) => {
     if (data) addNotification(data);
     else cancelNotification();
@@ -82,9 +82,6 @@ export const NotificationWrapper = ({
         "notification_ids",
         notificationIdsArrayWithNewIdString
       );
-
-      // Cancel notification
-      return;
     }
 
     // -> Object does not yet exists. Create it with new id
@@ -93,6 +90,9 @@ export const NotificationWrapper = ({
         "notification_ids",
         JSON.stringify([notification.doNotShowAgainId])
       );
+
+    // Reset do not show again
+    setDoNotShowAgain_internal(false);
 
     // Cancel notification
     return setNotification_internal(null);

@@ -2,6 +2,7 @@ import { User } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { NotificationContext } from "../../context/NotificationContext";
 import {
   ChangeEvent,
   CSSProperties,
@@ -15,6 +16,8 @@ import {
   MdArrowBack,
   MdGroupAdd,
   MdGroupOff,
+  MdGroup,
+  MdPublic,
   MdOutlineClose,
 } from "react-icons/md";
 import { ProfileContext } from "../../context/ProfileContext";
@@ -56,6 +59,7 @@ export const ContactCard = ({
   user?: User | null;
 }) => {
   const router = useRouter();
+  const [notification, setNotification] = useContext(NotificationContext);
 
   useEffect(() => {
     console.log(relationship);
@@ -82,6 +86,9 @@ export const ContactCard = ({
 
   // Add new field to local data copy
   const handleAddData = (type: DataType) => {
+    // Show info if appropriate
+    handleInfo();
+
     if (user) {
       // Set to active editing
       setActiveEdit(true);
@@ -128,6 +135,55 @@ export const ContactCard = ({
       // Close add field dropdown
       setDropdownToggle((prev) => !prev);
     }
+  };
+
+  const handleInfo = () => {
+    setNotification({
+      title: "Privacy controls",
+      description: (
+        <p style={{ margin: 0 }}>
+          New information is private{" "}
+          <div style={{ display: "inline-block" }}>
+            <div
+              style={{
+                background: "var(--color-main)",
+                border: "2px solid black",
+                width: "25px",
+                height: "25px",
+                fontSize: "1.6rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <MdGroup />
+            </div>
+          </div>{" "}
+          by default. Only you and your approved contacts can see it. Set it to
+          public{" "}
+          <div style={{ display: "inline-block" }}>
+            <div
+              style={{
+                background: "var(--color-main)",
+                border: "2px solid black",
+                width: "25px",
+                height: "25px",
+                fontSize: "1.6rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <MdPublic />
+            </div>
+          </div>{" "}
+          so anyone can see it.
+        </p>
+      ),
+      type: "info",
+      buttonText: "Got it",
+      doNotShowAgainId: "intro_3",
+    });
   };
 
   // LOCAL: Remove unsaved data from local copy
