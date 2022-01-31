@@ -29,7 +29,7 @@ export const LandingPageItem_4 = () => {
         </div>
       </Card>
       <div className={styles.textContainer}>
-        <h2>Stay in controll of your data</h2>
+        <h2>Stay in control of your data</h2>
         <h1>We care about data protection</h1>
         <p style={{ lineHeight: "3rem" }}>
           We don&apos;t personalize ads. We don&apos;t sell data. You are in control.
