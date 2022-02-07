@@ -59,7 +59,7 @@ export const NotificationWrapper = ({
     // Double check if notification is set before continuing
     if (!notification) return;
 
-    // Check if do not show again has been checked
+    // Check if "do not show again" has been checked
     // -> Not checked
     if (!doNotShowAgain || !notification.doNotShowAgainId)
       return setNotification_internal(null);
@@ -75,6 +75,7 @@ export const NotificationWrapper = ({
         ...notificationIdsArray,
         notification.doNotShowAgainId,
       ];
+
       const notificationIdsArrayWithNewIdString = JSON.stringify(
         notificationIdsArrayWithNewId
       );
@@ -82,17 +83,15 @@ export const NotificationWrapper = ({
         "notification_ids",
         notificationIdsArrayWithNewIdString
       );
-    }
-
-    // -> Object does not yet exists. Create it with new id
-    if (notification)
+    } else {
       localStorage.setItem(
         "notification_ids",
         JSON.stringify([notification.doNotShowAgainId])
       );
 
-    // Reset do not show again
-    setDoNotShowAgain_internal(false);
+      // Reset do not show again
+      setDoNotShowAgain_internal(false);
+    }
 
     // Cancel notification
     return setNotification_internal(null);
